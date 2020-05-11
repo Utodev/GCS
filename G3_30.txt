@@ -1,0 +1,93 @@
+SINTAC G3
+(c)2000 Login:
+
+jsj666@hotmail.com
+http://pagina.de/jsj
+===================================================
+
+G3.30
+-----
+
+Se ha eliminado un molesto fallo que afectaba a las tablas de mensajes. Al 
+cargar una partida grabada el intérprete no recuperaba correctamente los 
+punteros a las tablas de mensajes provocando la aparición de mensajes 
+aleatorios.
+
+Se han cambiado las teclas de cortar, copiar y pegar bloques de texto
+en el editor para hacerlo compatible con sistemas operativos actuales.
+
+G3.25
+-----
+Esta revisión afecta a las banderas de objeto en relación a las opciones de 
+disco (RAMSAVE, RAMLOAD, SAVE y LOAD), y actualiza la utilización de los 
+condactos de reinicialización (RESTART, END, EXIT).
+
+Hasta la versión G3.21, no existía en SINTAC un verdadero RESTART, ya que este
+condacto reinicializaba variables, banderas y posición de los objetos, pero NO
+sus banderas. Es decir, si el estado de una propiedad cambiaba durante una
+partida (por ejemplo, la fuente de luz deja de serlo), al recomenzar una nueva
+partida, dicha propiedad no era seteada a su estado original de fuente de luz,
+con las implicaciones lógicas (todas las rutinas de control daban error a partir
+de la segunda partida). Las acciones de disco, por su parte, tampoco tenían en
+cuenta las banderas de objeto, por lo que, al continuar con una partida salvada
+en disco, el estado de las banderas tampoco era recuperado. Esta útil
+herramienta del sistema quedaba muy limitada y reducía las posibilidades de
+desarrollo con SINTAC.
+
+En la nueva versión G3.25, se han modificado todos los condactos para las
+operaciones de disco, que ahora, automáticamente, graban a fichero/RAM:
+banderas, variables, y la tabla completa de objetos (tanto su posición como sus
+banderas). El condacto RESTART también se ha modificado, y ahora reinicia la
+tabla completa de objetos, por lo que siempre se recupera la situación inicial
+de los mismos.
+
+Las opciones para programar un RESTART a partir de ahora son 2 (aunque sólo la
+primera es la correcta):
+
+1) Utilizar RESTART normalmente
+
+2) Utilizar una combinación de los nuevos comandos (como se intentaba hacer
+   hasta la versión G3.21):
+
+En el Proceso de Inicializaciones:
+
+\PRO el que sea
+; Inicializaciones
+
+_   _   NOTZERO
+        DONE
+
+_   _   SET 3
+
+_   _   RAMSAVE 0   ; graba en el banco cero de RAM la situación inicial de
+                    ; variables, banderas, y la tabla COMPLETA de objetos.
+
+_   _   RAMLOAD 0 255 255   ; este RAMLOAD recupera la situación inicial
+
+_   _   ABILITY 10
+        etc.
+
+En la tabla de respuestas se pondrán las siguientes entradas para un RESTART:
+
+FIN _   QUIT        ; si respondemos que SI
+        END         ; provoca el RESTART
+
+FIN _   DONE         
+
+El RAMLOAD 0 255 255 es necesario (?) para que se recupere la RAM si hacemos un
+RESTART (¿Lo intentas de nuevo? SI) a partir de la segunda partida.
+
+Alternativamente, puedes utilizar EXIT 0 en lugar de END si lo que necesitas es
+un RESTART DIRECTO sin que se imprima el mensaje del sistema 31 (o EXIT 1 si lo
+que quieres es una salida inmediata al sistema operativo sin previo aviso).
+
+Seguir este sistema implica la necesidad de reservar, por ejemplo, el banco CERO
+de RAM exclusivamente para reinicializaciones, y el banco UNO para DESHACER/OOPS
+(con un RAM SAVE automático por cada turno) o para RAM SAVE del jugador.
+
+Con esta versión, se duplica la funcionalidad a la hora de programar, pero
+siempre es mejor tener más de una posibilidad para obtener el efecto deseado. En
+realidad, esta segunda opción era la que se intentaba utilizar hasta la versión
+anterior 3.21 para conseguir un RESTART, aunque en realidad no funcionaba. Ahora
+es suficiente con insertar en RESTART/EXIT/END en el lugar adecuado de la tabla
+de RESPUESTAS.

@@ -1,0 +1,468 @@
+; -------------------------------------------------------------
+;   BASE DE DATOS DE INICIO para el sistema SINTAC versi¢n G3
+; -------------------------------------------------------------
+
+; definici¢n de constantes
+\\V_MOV         14      ; m ximo n§ para verbos de movimiento
+\\N_CONV        20      ; m ximo n§ para nombres convertibles
+\\N_PROP        50      ; m ximo n§ para nombres propios
+
+; localidades especiales
+\\LOC_NOCREADO  252     ; localidad para objetos no creados
+\\LOC_PUESTO    253     ; localidad para objetos puestos (WEAR)
+\\LOC_COGIDO    254     ; localidad para objetos cogidos (GET)
+\\LOC_ACTUAL    255     ; equivale a localidad actual
+
+; n£mero de palabra no v lida
+\\PAL_NO        255
+
+; c¢digos de INPUT
+\\TECLA_F1      255     ; tecla F1
+\\TECLA_F2      254     ; tecla F2
+\\TECLA_F3      253     ; tecla F3
+\\TECLA_F4      252     ; tecla F4
+\\TECLA_F5      251     ; tecla F5
+\\TECLA_F6      250     ; tecla F6
+\\TECLA_F7      249     ; tecla F7
+\\TECLA_F8      248     ; tecla F8
+\\TECLA_F9      247     ; tecla F9
+\\TECLA_F10     246     ; tecla F10
+\\BTN_RATON     238     ; pulsaci¢n bot¢n del rat¢n
+
+; c¢digos para WBORDER
+\\WB_NO         0       ; sin borde
+\\WB_SENCILLO   1       ; sencillo
+\\WB_DOBLE      2       ; doble
+\\WB_DOBLE_SENC 3       ; doble-sencillo laterales
+\\WB_SENC_DOBLE 4       ; sencillo-doble laterales
+\\WB_SOMBR1     5       ; sombreado 1
+\\WB_SOMBR2     6       ; sombreado 2
+\\WB_SOMBR3     7       ; sombreado 3
+\\WB_RELLENO    8       ; relleno
+
+; valores para SETAT, CLEARAT, HASAT, HASNAT
+\\AT_PRENDA     16      ; atributo de prenda
+\\AT_LUZ        17      ; atributo de fuente de luz
+
+; valores para DEBUG
+\\DEBUG_SI      1       ; activa paso a paso
+\\DEBUG_NO      0       ; desactiva paso a paso
+
+; valores para TIME
+\\TIME_FRASE    0       ; tiempo para teclear toda la frase
+\\TIME_LETRA    1       ; tiempo para teclear primera letra
+
+; modos de pantalla (MODE)
+\\MODO_16       0       ; modo de 640x480, 16 colores
+\\MODO_256      1       ; modo de 320x200, 256 colores
+
+; modos de funcionamiento de GRAPHIC
+\\GRF_PRESENTA  0       ; dibuja el gr fico seg£n se va cargando
+\\GRF_MEM       1       ; dibuja el gr fico una vez se ha cargado
+\\GRF_PRESENTAP 2       ; como GRF_PRESENTA pero no modifica la paleta
+\\GRF_MEMP      3       ; como GRF_MEM pero no modifica la paleta
+
+; valores para MOUSE
+\\RATON_SI      1       ; activa rat¢n
+\\RATON_NO      0       ; desactiva rat¢n
+
+; valores para MOUSEBT
+\\BTN_IZQUIERDO 0       ; comprueba bot¢n izquierdo
+\\BTN_DERECHO   1       ; comprueba bot¢n derecho
+\\BTN_IZQDER    2       ; comprueba ambos a la vez
+\\BTN_BOTON     3       ; comprueba cualquiera de los dos
+
+; valores para MUSIC
+\\MUS_1         0       ; toca la melod¡a una sola vez
+\\MUS_REP       1       ; repite la melod¡a c¡clicamente
+
+; valores para PLAYFLI
+\\FLI_REP       0       ; repite la animaci¢n c¡clicamente
+\\FLI_1         1       ; ejecuta la animaci¢n una sola vez
+\MSY
+@0 Has cogido _.|@
+@1 Aqu¡ no est  eso.|@
+@2 No puedes coger _. Llevas demasiadas cosas.|@
+@3 Ya tienes eso.|@
+@4 Dejas _.|@
+@5 No tienes eso.|@
+@6 |> @         ; PROMPT
+@7 Û@           ; CURSOR
+@8 No puedes hacer eso.|@
+@9 Tambi‚n puedes ver: @
+@10 nada.|@
+@11 , @
+@12  y @
+@13 .|@
+@14 Tienes: @
+@15 Llevas puesto: @
+@16 Ya llevas puesto _.|@
+@17 No puedes ponerte _.|@
+@18 Te pones _.|@
+@19 No llevas puesto eso.|@
+@20 Te quitas _.|@
+@21 No puedes ir en esa direcci¢n.|@
+@22 --- Pulsa una tecla ---@
+@23 Est  oscuro. No puedes ver nada.@
+@24 ¨Est s seguro? @
+@25 SN@
+@26 Nombre del fichero: @
+@27 Fichero ya existe. ¨Quieres continuar? @
+@28 Error de apertura de fichero.|@
+@29 Error de entrada/salida en fichero.|@
+@30 Fichero no v lido.|@
+@31 ¨Lo intentas de nuevo? @
+\END
+\VOC
+; ------------------------
+;  Palabras de movimiento
+; ------------------------
+N               1       nombre
+NORTE           1       nombre
+S               2       nombre
+SUR             2       nombre
+E               3       nombre
+ESTE            3       nombre
+O               4       nombre
+OESTE           4       nombre
+NE              5       nombre
+NORESTe         5       nombre
+NO              6       nombre
+NOROESte        6       nombre
+SE              7       nombre
+SURESTe         7       nombre
+SO              8       nombre
+SUROESte        8       nombre
+ARRIBA          9       nombre
+SUBIR           9       verbo
+SUBE            9       verbo
+SUBO            9       verbo
+BAJAR           10      verbo
+BAJA            10      verbo
+BAJO            10      verbo
+ABAJO           10      nombre
+ENTRAR          11      verbo
+ENTRA           11      verbo
+ENTRO           11      verbo
+SALIR           12      verbo
+SALGO           12      verbo
+SAL             12      verbo
+; --------
+;  Verbos
+; --------
+; NOTA: si un verbo tiene menos de 6 letras debes a¤adir las correspon-
+; dientes para el verbo con terminaci¢n. Ej.: para DEJA tambi‚n hay que
+; a¤adir en el vocabulario DEJALO, DEJALA, DEJALE.
+
+COGER           20      verbo   ; Coger
+COGERLo         20      verbo
+COGE            20      verbo
+COGELO          20      verbo
+COGELA          20      verbo
+COGELE          20      verbo
+COJO            20      verbo
+
+DEJAR           21      verbo   ; Dejar
+DEJARLo         21      verbo
+DEJA            21      verbo
+DEJALO          21      verbo
+DEJALA          21      verbo
+DEJALE          21      verbo
+DEJO            21      verbo
+
+PONER           22      verbo   ; Poner
+PONERLo         22      verbo
+PONTE           22      verbo
+PONTELo         22      verbo
+PONGO           22      verbo
+PON             22      verbo
+PONLO           22      verbo
+PONLA           22      verbo
+PONLE           22      verbo
+PONSELo         22      verbo
+PONME           22      verbo
+PONMELo         22      verbo
+
+QUITAR          23      verbo   ; Quitar (prendas)
+QUITA           23      verbo
+QUITALo         23      verbo
+QUITO           23      verbo
+
+M               24      verbo   ; Mirar, describir
+MIRAR           24      verbo
+MIRARLo         24      verbo
+MIRA            24      verbo
+MIRALO          24      verbo
+MIRALA          24      verbo
+MIRALE          24      verbo
+MIRO            24      verbo
+DESCRIbir       24      verbo
+
+FIN             25      verbo   ; Fin
+ACABAR          25      verbo
+ACABA           25      verbo
+ACABO           25      verbo
+TERMINar        25      verbo
+
+EX              26      verbo   ; Examinar
+EXAMINar        26      verbo
+LEER            26      verbo   ; Leer
+LEERLO          26      verbo
+LEERLA          26      verbo
+LEERLE          26      verbo
+LEO             26      verbo
+LEE             26      verbo
+LEELO           26      verbo
+LEELA           26      verbo
+LEELE           26      verbo
+
+SAVE            27      verbo   ; Grabar
+GRABAR          27      verbo
+GRABA           27      verbo
+GRABO           27      verbo
+
+LOAD            28      verbo   ; Cargar
+CARGAR          28      verbo
+CARGA           28      verbo
+CARGO           28      verbo
+
+DECIR           29      verbo   ; Decir, hablar, preguntar
+DECIRLe         29      verbo
+DIGO            29      verbo
+DI              29      verbo
+DILE            29      verbo
+HABLAR          29      verbo
+HABLA           29      verbo
+PREGUNtar       29      verbo
+
+ABRIR           30      verbo   ; Abrir
+ABRIRLo         30      verbo
+ABRO            30      verbo
+ABRE            30      verbo
+ABRELO          30      verbo
+ABRELA          30      verbo
+ABRELE          30      verbo
+
+CERRAR          31      verbo   ; Cerrar
+CIERRO          31      verbo
+CIERRA          31      verbo
+
+LUCHO           32      verbo   ; Luchar
+LUCHAR          32      verbo
+LUCHA           32      verbo
+MATAR           32      verbo   ; Matar
+MATARLe         32      verbo
+MATA            32      verbo
+MATALE          32      verbo
+MATO            32      verbo
+GOLPEAr         32      verbo   ; Golpear
+ATACAR          32      verbo   ; Atacar
+ATACA           32      verbo
+ATACALe         32      verbo
+ATACO           32      verbo
+PEGAR           32      verbo
+PEGO            32      verbo
+PEGA            32      verbo
+PEGALE          32      verbo
+
+; ---------
+;  Nombres
+; ---------
+
+; convertibles (pueden usarse como verbos)
+I               15      verbo   ; Inventario
+INVENTario      15      verbo
+
+; propios (no les afectan las ternimaciones LO, LA, LE)
+TODO            20      nombre
+
+; otros nombres
+RAM             50      nombre  ; para SAVE RAM y LOAD RAM
+LINTERna        51      nombre
+
+; -----------
+;  Adjetivos
+; -----------
+VIEJA           1       adjetivo
+
+; --------------
+;  Conjunciones
+; --------------
+Y               1       conjunci¢n
+LUEGO           1       conjunci¢n
+\END
+\MSG 0
+; tabla de mensajes 0
+@0 Primer mensaje.@
+\END
+\LOC
+@0 Localidad de inicio.@
+\END
+\OBJ
+; Banderas usuario ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+; Tipo (Prenda, Luz) ÄÄÄÄÄÄÄÄÄÄÄ¿               ³
+; Loc. inicio ÄÄÄÄÄÄÄÄÄÄ¿       ³               ³
+;   252 - no creado     ³       ³               ³
+;   253 - puesto        ³       ³               ³
+;   254 - cogido        ³       ³               ³
+; Adjetivo ÄÄÄÄÄÄÄ¿     ³       ³               ³
+; Nombre ¿        ³     ³       ³               ³
+
+@0 LINTERNA     VIEJA   0       L               OOOOOOOOOOOOOOOO
+una vieja linterna
+\END
+\PRO 0
+; se ejecuta tras cada inicializaci¢n y tras cada condacto DESC
+
+_       _       PROCESS 4       ; inicializaciones (no tras un condacto DESC)
+_       _       NOTZERO 2       ; si hay que saltar acciones DESC
+                                ; (ej, se ejecut¢ RESTART)
+                SKIP $buc_princ
+_       _       SET 2           ; aqu¡ llega si es inicio del juego o DESC
+
+; ejecuta diversas acciones tras una descripci¢n.
+
+_       _       NORESP
+_       _       NEWLINE
+                LISTOBJ         ; lista objetos
+                PROCESS 1       ; el Proceso 1 se ejecuta tras una descripci¢n
+$buc_princ
+_       _       TIMEOUT
+                PROCESS 3
+_       _       SYSMESS 6
+                INPUT           ; pide frase de entrada
+                PROCESS 5       ; procesa teclas de funci¢n
+                SKIP $buc_princ
+_       _       NEWLINE
+$buc_sec
+_       _       PROCESS 2       ; analiza, salta a sgte. entr. si no hay m s
+                NORESP
+                PROCESS 3       ; ejecuta despu‚s de respuesta
+                SKIP $buc_sec
+
+_       _       SKIP $buc_princ
+\END
+\PRO 1
+; se ejecuta tras una descripci¢n
+
+\END
+\PRO 2
+; tabla de Respuestas
+
+_       _       PARSE
+                NOTDONE         ; no hay m s
+
+_       _       RESP
+
+_       _       ISMOV           ; si es movimiento
+                MOVE 1          ; intenta mover en esa direcci¢n
+                CLW [0]         ; si pudo moverse, borra ventana activa
+                DESC [1]        ; y describe localidad
+_       _       ISMOV
+                SYSMESS 21      ; si no pudo moverse
+                DONE
+
+I       _       SET 7           ; este SET es necesario s¢lo si tenemos
+                SYSMESS 14      ; LISTAT y LISTOBJ en modo 0
+                LISTAT 254
+                SYSMESS 15
+                LISTAT 253
+                CLEAR 7         ; restauramos modo de LISTAT y LISTOBJ
+                DONE
+
+M       _       CLW [0]         ; borra ventana activa
+                DESC [1]
+
+GRABA   RAM     RAMSAVE 0
+                DONE
+
+CARGA   RAM     RAMLOAD 0 255 255
+                DESC [1]
+
+CARGA   RAM     SYSMESS 8
+                DONE
+
+GRABA   _       SAVE
+                DONE
+
+CARGA   _       LOAD 255 255
+                DESC [1]
+
+FIN     _       QUIT
+                END
+FIN     _       DONE
+
+; ---------------------
+;  Acci¢n COGER objeto
+; ---------------------
+COGER   TODO    FIRSTO          ; inicio de bucle DOALL
+$doall_coger
+COGER   _       NEXTO 255       ; siguiente objeto si en bucle DOALL
+COGER   _       AUTOG           ; coge objeto
+                ISDOALL         ; si est  en bucle DOALL
+                SKIP $doall_coger       ; repite con siguiente objeto
+COGER   _       DONE            ; si no pudo coger, o cogi¢ y no en DOALL
+
+; ---------------------
+;  Acci¢n DEJAR objeto
+; ---------------------
+DEJAR   TODO    FIRSTO          ; inicio de bucle DOALL
+$doall_dejar
+DEJAR   _       NEXTO 254       ; siguiente objeto si en bucle DOALL
+DEJAR   _       AUTOD           ; deja objeto
+                ISDOALL         ; si est  en bucle DOALL
+                SKIP $doall_dejar       ; repite con siguiente objeto
+DEJAR   _       DONE            ; si no pudo dejar, o dej¢ y no en DOALL
+
+; ---------------------
+;  Acci¢n PONER objeto
+; ---------------------
+PONER   TODO    FIRSTO          ; inicio de bucle DOALL
+$doall_poner
+PONER   _       NEXTO 254       ; siguiente objeto si en bucle DOALL
+PONER   _       AUTOW           ; pone objeto
+                ISDOALL         ; si est  en bucle DOALL
+                SKIP $doall_poner       ; repite con siguiente objeto
+PONER   _       DONE            ; si no pudo poner, o puso y no en DOALL
+
+; ----------------------
+;  Acci¢n QUITAR objeto
+; ----------------------
+QUITAR  TODO    FIRSTO          ; inicio de bucle DOALL
+$doall_quitar
+QUITAR  _       NEXTO 253       ; siguiente objeto si en bucle DOALL
+QUITAR  _       AUTOR           ; quita objeto
+                ISDOALL         ; si est  en bucle DOALL
+                SKIP $doall_quitar      ; repite con siguiente objeto
+QUITAR  _       DONE            ; si no pudo quitar, o quit¢ y no en DOALL
+
+; ----------------------------------------------------------------------------
+_       _       SYSMESS 8
+                DONE            ; hay m s en l¡nea input
+; ----------------------------------------------------------------------------
+\END
+\PRO 3
+; se ejecuta despu‚s de respuesta
+\END
+\PRO 4
+; inicializaciones (def. ventanas,...)
+
+_       _       NOTZERO 3       ; sale si no hay que hacer inicializaciones
+                DONE
+_       _       SET 3           ; indica que ya se han hecho inicializaciones
+
+_       _       ABILITY 10
+
+_       _       DEFWIN 0 0 7 0 0 255 255
+                WINDOW 0
+                CLW 0
+
+_       _       DESC [1]        ; describe localidad actual (seguramente la 0)
+\END
+\PRO 5
+; responde a teclas de funci¢n pulsadas en INPUT
+
+_       _       EQ 12 TECLA_F10
+                DEBUG DEBUG_SI  ; si pulsa F10 activa paso a paso
+                DONE
+\END
