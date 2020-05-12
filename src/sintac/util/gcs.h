@@ -4,7 +4,7 @@
 **************************************/
 
 /*** Constantes ***/
-#define GCS_VERSION	"4.0"
+#define GCS_VERSION	"4.1"
 
 #define COLOR_FONDO   	7      	/* color fondo de botones */
 #define COLOR_PPLANO   	0       /* color texto de botones */
@@ -96,7 +96,7 @@ void copia_def_car(BYTE far *origen, BYTE far *destino);
 void dibuja_en_cuadricula(void);
 void actualiza_tabla(int x, int y, int ascii);
 void dibuja_caracter(void);
-int graba_def(char *nombre);
+int graba_def(char *nombre, int type);
 int carga_def(char *nombre);
 void cuadricula(int x, int y);
 void tab_ascii(int x, int y);
@@ -112,7 +112,7 @@ void invertir_def(void);
 void gira180(void);
 void espejo_def(void);
 void cargar_fuente(void);
-void grabar_fuente(void);
+void grabar_fuente(int type);
 void pasa_a8x16(void);
 void pasa_a8x8(void);
 void prueba_car(void);

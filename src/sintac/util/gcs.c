@@ -41,6 +41,7 @@ int altura_cuad=16;             /* altura de caracteres actual */
 BYTE caracter[16];              /* definici¢n car cter actual */
 int ascii=0;                    /* c¢digo ASCII de car cter actual */
 int car_modificado=0;           /* indicador de modificaci¢n de caracteres */
+int last_file_type=0;			/* indicador del tipo del £ltimo fichero cargado */
 
 /*** Programa principal ***/
 #pragma warn -par
@@ -50,7 +51,7 @@ STC_RATONG r;
 STC_MENUG *m0, *m1, *m2, *m3;
 char drive[MAXDRIVE], dir[MAXDIR], file[MAXFILE], ext[MAXEXT], nf_icn[MAXPATH];
 char *s, *cab="GENERADOR DE CARACTERES SINTAC versi¢n "GCS_VERSION
-  "  (c)1995 JSJ Soft Ltd.";
+  "  (c)1995-2020 JSJ Soft Ltd.";
 int mvid, tecla, cuad_x=0, cuad_y=0, i, j;
 
 /* recoge directorio d¢nde est  el programa */
@@ -96,9 +97,9 @@ m0=mg_crea(MENUG_HORZ | MENUG_FIJO,NULL,
   "\xff^Fichero\xff:\xff^Editar\xff:""\xff""Efec^tos\xff"
   "                                                  ",
   1,0,1);
-m1=mg_crea(MENUG_VERT,NULL," ^Cargar fuente : ^Grabar fuente| ^Salir",
-  2,1,0);
-m2=mg_crea(MENUG_VERT,NULL," Fuente 8x1^6 : Fuente ^8x8| ^Prueba",
+m1=mg_crea(MENUG_VERT,NULL," ^Cargar fuente : ^Grabar fuente| ^Salir",  2,1,0);
+m1=mg_crea(MENUG_VERT,NULL," ^Cargar fuente : Grabar fuente ^SINTAC: ^Grabar fuente DAAD ^8 bit : ^Grabar fuente DAAD ^16 bit | ^Salir",  2,1,0);
+m2=mg_crea(MENUG_VERT,NULL," Fuente ^8x8 : Fuente 8x1^6| ^Probar fuente",
   2,11,0);
 m3=mg_crea(MENUG_VERT,NULL," I^nvertir: Rayado ^horizontal : Rayado ^vertical:"
   " Cursiva ^izquierda: Cursiva ^derecha: Ne^grita",2,20,0);
@@ -143,6 +144,7 @@ limpia_caracter(caracter,0);
 g_rectangulo(DEFCAR_X,DEFCAR_Y,DEFCAR_X+DEFCAR_ANCHO-1,DEFCAR_Y+DEFCAR_ALTO-1,
   0,G_NORM,1);
 dibuja_caracter();
+pasa_a8x8();
 
 while(1) {
 	/* espera a pulsaci¢n de tecla o bot¢n de rat¢n */
@@ -183,9 +185,15 @@ while(1) {
 						  ascii);
 						break;
 					case 1 :
-						grabar_fuente();
+						grabar_fuente(1);
+						break;
+					case 2 :
+						grabar_fuente(2);
 						break;
 					case 3 :
+						grabar_fuente(3);
+						break;
+					case 5 :
 						tablacar_modificada();
 						mg_elimina(m3);
 						mg_elimina(m2);
@@ -203,7 +211,7 @@ while(1) {
 				mg_cierra(m2);
 
 				switch(j) {
-					case 0 :
+					case 1 :
 						/* si no est  en 8x16 */
 						if(altura_cuad!=16) {
 							pasa_a8x16();
@@ -219,7 +227,7 @@ while(1) {
 							  ascii);
 						}
 						break;
-					case 1 :
+					case 0 :
 						/* si no est  en 8x8 */
 						if(altura_cuad!=8) {
 							pasa_a8x8();
@@ -1087,43 +1095,66 @@ rg_puntero(RG_MUESTRA);
 /****************************************************************************
 	GRABA_DEF: graba en un fichero las definiciones de los caracteres.
 	  Entrada:      'nombre' nombre con que se grabar  la fuente
+	  				'type' tipo de font que se graba: 1) SINTAC 2) DAAD 3) DAAD 16 bit
 	  Salida:       0 si hubo error o un valor distinto de 0 en
 			otro caso
 ****************************************************************************/
-int graba_def(char *nombre)
+
+
+int graba_def(char *nombre, int type)
 {
 FILE *ffuente;
 size_t num_bytes;
+BYTE fake_plus3_header[128];
 
 /* abre el fichero para escritura en modo binario */
 ffuente=fopen(nombre,"wb");
 /* sale si hubo error */
 if(ffuente==NULL) return(0);
 
+
 /* escribe cadena de reconocimiento */
+if (type==1)
 if(fwrite(RECON_FUENTE,sizeof(char),LONG_RECON_F+1,ffuente)<LONG_RECON_F+1) {
 	fclose(ffuente);
 	return(0);
 }
 
+
+
 /* escribe anchuras de caracteres 8x16 */
+if (type==1)
 if(fwrite(tabla_anch8x16,sizeof(BYTE),256,ffuente)<256) {
 	fclose(ffuente);
 	return(0);
 }
 
+
 /* escribe definiciones de caracteres 8x16 */
 num_bytes=(size_t)(256*16);
+if (type==1)
 if(fwrite(tabla_ascii8x16,sizeof(BYTE),num_bytes,ffuente)<num_bytes) {
 	fclose(ffuente);
 	return(0);
 }
 
+
 /* escribe anchuras de caracteres 8x8 */
+if (type==1)
 if(fwrite(tabla_anch8x8,sizeof(BYTE),256,ffuente)<256) {
 	fclose(ffuente);
 	return(0);
 }
+
+/* Escribe cabecera de Spectrum +3 si necesario */
+if (type==1)
+{
+	if(fwrite(fake_plus3_header, 1, 128, ffuente) < 128) {
+		fclose(ffuente);
+		return(0);
+	}
+}
+
 
 /* escribe definiciones de caracteres 8x8 */
 num_bytes=(size_t)(256*8);
@@ -1131,9 +1162,9 @@ if(fwrite(tabla_ascii8x8,sizeof(BYTE),num_bytes,ffuente)<num_bytes) {
 	fclose(ffuente);
 	return(0);
 }
-
 fclose(ffuente);
 
+last_file_type = type;
 car_modificado=0;
 
 return(1);
@@ -1143,78 +1174,118 @@ return(1);
 	CARGA_DEF: carga de un fichero las definiciones de los
 	  caracteres.
 	  Entrada:      'nombre' nombre del fichero
-	  Salida:       0 si hubo error o un valor distinto de 0 en
-			otro caso
+	  Salida:       0 si hubo error o  el tipo de fichero cargado (SINTAC, 
+	                DAAD, DAAD16) en otro caso.
 ****************************************************************************/
 int carga_def(char *nombre)
 {
+
 FILE *ffuente;
 char cad_recon[LONG_RECON_F+1];
 char *recon_fuente=RECON_FUENTE;
 size_t num_bytes;
-int i, version=0;
+int i, j, version=0;
+int type, file_size;
 
 /* abre el fichero para lectura */
 ffuente=fopen(nombre,"rb");
 /* sale si hubo error */
 if(ffuente==NULL) return(0);
 
+
+/* Determinar el tipo de fichero que estamos anbriendo por el tama¤o del fichero */
+fseek(ffuente, 0, SEEK_END);
+file_size = ftell(ffuente);
+fseek(ffuente, 0, SEEK_SET);
+switch (file_size)
+{
+	case 2048: type=2; version=0; break;
+	case 2048+128: type=3; version=0;  break;
+	default: type=1;
+}
+
+if (type==3) fseek(ffuente, 128, SEEK_SET);
+
+
 /* lee cadena de reconocimiento */
-if(fread(cad_recon,sizeof(char),LONG_RECON_F+1,ffuente)<LONG_RECON_F+1) {
-	fclose(ffuente);
-	return(0);
+if (type==1)
+{
+	if(fread(cad_recon,sizeof(char),LONG_RECON_F+1,ffuente)<LONG_RECON_F+1) {
+		fclose(ffuente);
+		return(0);
+	}
 }
 
 /* comprueba la versi¢n del fichero */
 /* si es versi¢n 2 lo convierte */
-if(cad_recon[LONG_RECON_F-1]=='2') {
-	i=cuadro_siono("Formato antiguo fuente.\n     ¨Convertirla?");
-	if((i==-1) || !i) return(1);
-	else version=1;
-}
-else if(cad_recon[LONG_RECON_F-1]!=recon_fuente[LONG_RECON_F-1]) {
-	fclose(ffuente);
-	return(0);
+if (type==1)
+{
+	if(cad_recon[LONG_RECON_F-1]=='2') {
+		i=cuadro_siono("Formato antiguo fuente.\n     ¨Convertirla?");
+		if((i==-1) || !i) return(1);
+		else version=1;
+	}
+	else if(cad_recon[LONG_RECON_F-1]!=recon_fuente[LONG_RECON_F-1]) {
+		fclose(ffuente);
+		return(0);
+	}
 }
 
 /* si la versi¢n ha sido v lida lee las definiciones de los caracteres */
 /* anchuras 8x16 */
-if(!version) {
-	if(fread(tabla_anch8x16,sizeof(BYTE),256,ffuente)<256) {
-		fclose(ffuente);
-		return(0);
+if (type==1)
+{
+	if(!version) {
+		if(fread(tabla_anch8x16,sizeof(BYTE),256,ffuente)<256) {
+			fclose(ffuente);
+			return(0);
+		}
 	}
+	else for(i=0; i<256; i++) tabla_anch8x16[i]=8;
 }
-else for(i=0; i<256; i++) tabla_anch8x16[i]=8;
-
 /* definiciones 8x16 */
-num_bytes=(size_t)(256*16);
-if(fread(tabla_ascii8x16,sizeof(BYTE),num_bytes,ffuente)<num_bytes) {
-	fclose(ffuente);
-	return(0);
-}
-
-/* anchuras 8x8 */
-if(!version) {
-	if(fread(tabla_anch8x8,sizeof(BYTE),256,ffuente)<256) {
+if (type==1)
+{
+	num_bytes=(size_t)(256*16);
+	if(fread(tabla_ascii8x16,sizeof(BYTE),num_bytes,ffuente)<num_bytes) {
 		fclose(ffuente);
 		return(0);
 	}
 }
-else for(i=0; i<256; i++) tabla_anch8x8[i]=8;
+/* anchuras 8x8 */
+if (type==1)
+{
+	if(!version) {
+		if(fread(tabla_anch8x8,sizeof(BYTE),256,ffuente)<256) {
+			fclose(ffuente);
+			/* Si era un fuente DAAD, rellenamos las de 16 con las de 8 */
+			if (type>1)
+			{
+				for (i=0;i<256;i++) for (j=0;j<8;j++)
+				{
+					tabla_ascii8x16[i][j*2] = tabla_ascii8x8[i][j*2];
+					tabla_ascii8x16[i][j*2+1] = tabla_ascii8x8[i][j*2];
+				}
+			}
+			return(0);
+		}
+	}
+	else for(i=0; i<256; i++) tabla_anch8x8[i]=8;
+}
 
 /* definiciones 8x8 */
 num_bytes=(size_t)(256*8);
 if(fread(tabla_ascii8x8,sizeof(BYTE),num_bytes,ffuente)<num_bytes) {
 	fclose(ffuente);
+	
 	return(0);
 }
 
 fclose(ffuente);
-
+last_file_type = type;
 car_modificado=0;
 
-return(1);
+return(last_file_type);
 }
 
 /****************************************************************************
@@ -1563,8 +1634,11 @@ cg_selecc_ficheros(CG_CENT,CG_CENT," Cargar fuente ",COLOR_FONDO,COLOR_PPLANO,
 /* sale si no se eligi¢ ning£n fichero */
 if(!*nfich) return;
 
-if(!carga_def(nfich)) cuadro_aviso("  Fichero no v lido\n"
+last_file_type = carga_def(nfich);
+if(!last_file_type) cuadro_aviso("  Fichero no v lido\n"
   "  o error en lectura.");
+
+
 
 /* redibuja la tabla ASCII */
 dibuja_marcador_ascii(ascii);
@@ -1577,8 +1651,10 @@ dibuja_marcador_ascii(ascii);
 /****************************************************************************
 	GRABAR_FUENTE: rutina para grabar un fichero con definiciones de
 	  caracteres.
+
+	  type = 1->SINTAC, 2->DAAD, 3-->DAAD 16 bit
 ****************************************************************************/
-void grabar_fuente(void)
+void grabar_fuente(int type)
 {
 char nfich[MAXPATH];
 int i;
@@ -1596,7 +1672,7 @@ if(!access(nfich,0)) {
 	if((i==-1) || !i) return;
 }
 
-if(!graba_def(nfich)) cuadro_aviso("   Error de apertura\n"
+if(!graba_def(nfich, type)) cuadro_aviso("   Error de apertura\n"
   " o error en escritura.");
 
 }
@@ -1784,7 +1860,7 @@ int i;
 if(car_modificado) {
 	i=cuadro_siono("Juego de caracteres ha\n    sido modificado\n"
 	  "      ¨Grabarlo?");
-	if(i==1) grabar_fuente();
+	if(i==1) grabar_fuente(last_file_type);
 }
 
 car_modificado=0;
