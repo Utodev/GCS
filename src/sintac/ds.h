@@ -32,11 +32,10 @@ int int24_hnd(int errval, int ax, int bp, int si);
 int saca_pal(BYTE num_pal,BYTE tipo_pal);
 void imp_condacto(BYTE indir, BYTE npar, BYTE *pro_d);
 BYTE inp_deb(void);
-void imp_varband(BYTE variable, BYTE bandera);
+void imp_flag(BYTE flag);
 void guarda_debugger(void);
 void recupera_debugger(void);
-void imp_debugger(BYTE indir, BYTE npar, BYTE *pro_d, BYTE variable,
-  BYTE bandera, char *txt_deb);
+void imp_debugger(BYTE indir, BYTE npar, BYTE *pro_d, BYTE flag, char *txt_deb);
 void debugger(BYTE indir, BYTE npar, BYTE *pro_d);
 #endif
 

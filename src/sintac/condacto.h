@@ -28,7 +28,7 @@ typedef struct condacto {
 
 /* bancos para RAMSAVE y RAMLOAD */
 typedef struct {
-	BYTE bram[VARS+BANDS+MAX_OBJ];
+	BYTE bram[FLAGS+MAX_OBJ];
 	char *tab_obj;          /* G3.25: para guardar la tabla de objetos */
 	BOOLEAN usado;
 } STC_BANCORAM;
@@ -44,6 +44,12 @@ BOOLEAN parse1(void);
 void pausa(clock_t p);
 int carga_def(char *nombre);
 int carga_tabla_mes(BYTE nt);
+void setflag(BYTE nv, BYTE value);
+BYTE getflag(BYTE nv);
+BOOLEAN getflagbit(BYTE nf, BYTE nb);
+void setflagbit(BYTE nv, BYTE nb);
+void clearflagbit(BYTE nf, BYTE nb);
+
 
 BOOLEAN process(BYTE prc);
 BOOLEAN done(void);
@@ -68,9 +74,13 @@ BOOLEAN sub(BYTE nv, BYTE val);
 BOOLEAN inc(BYTE nv);
 BOOLEAN dec(BYTE nv);
 BOOLEAN set(BYTE nf);
+BOOLEAN bset(BYTE nb);
 BOOLEAN clear(BYTE nf);
+BOOLEAN bclear(BYTE nf);
 BOOLEAN zero(BYTE nf);
 BOOLEAN notzero(BYTE nf);
+BOOLEAN bzero(BYTE nf);
+BOOLEAN bnotzero(BYTE nf);
 BOOLEAN place(BYTE nobj, BYTE nloc);
 BOOLEAN get(BYTE nobj);
 BOOLEAN drop(BYTE nobj);
@@ -120,10 +130,10 @@ BOOLEAN random1(BYTE varno, BYTE rnd);
 BOOLEAN seed(BYTE seed);
 BOOLEAN puto(BYTE nloc);
 BOOLEAN inkey(void);
-BOOLEAN copyov(BYTE nobj, BYTE varno);
+BOOLEAN copyof(BYTE nobj, BYTE varno);
 BOOLEAN chance(BYTE rnd);
 BOOLEAN ramsave(BYTE banco);
-BOOLEAN ramload(BYTE banco, BYTE vtop, BYTE ftop);
+BOOLEAN ramload(BYTE banco, BYTE ftop);
 BOOLEAN ability(BYTE nobjs);
 BOOLEAN autog(void);
 BOOLEAN autod(void);
@@ -133,7 +143,7 @@ BOOLEAN isdoall(void);
 BOOLEAN ask(BYTE smess1, BYTE smess2, BYTE varno);
 BOOLEAN quit(void);
 BOOLEAN save(void);
-BOOLEAN load(BYTE vtop, BYTE ftop);
+BOOLEAN load(BYTE ftop);
 BOOLEAN exit1(BYTE ex);
 BOOLEAN end1(void);
 BOOLEAN printat(BYTE y, BYTE x);

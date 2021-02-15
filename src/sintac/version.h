@@ -6,14 +6,10 @@
 #if !defined (VERSION_H)
 #define VERSION_H
 
-#define SHARE       0   /* 0=versi¢n completa, 1=versi¢n "shareware" */
+#define SHARE       0   
 
-#define COPYRIGHT   "S.I.N.T.A.C.   (c)2000 Login:"
+#define COPYRIGHT   "SINDAAD  (c) 2000-2020"
 
-#if SHARE==0
-#define VERSION     "G3.30"
-#else
-#define VERSION     "G3.SH"
-#endif
+#define VERSION     "D1.00"
 
 #endif  /* VERSION_H */

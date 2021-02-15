@@ -1,4 +1,4 @@
-/****************************************************************************
+****************************************************************************
 	Funciones para ejecutar cada uno de los condactos del SINTAC
 ****************************************************************************/
 
@@ -27,20 +27,17 @@
 /*** Variables externas ***/
 #if DEBUGGER==1
 extern BOOLEAN debugg;          /* TRUE si paso a paso activado */
-extern BOOLEAN pra_lin;         /* TRUE si en primera l°nea de una entrada */
+extern BOOLEAN pra_lin;         /* TRUE si en primera l√≠nea de una entrada */
 extern STC_VV vv_deb;           /* ventana de debugger */
 extern unsigned char far *img_debug;    /* puntero buffer para fondo debug. */
 #endif
 
-#if RUNTIME==1
-extern long lng_runtime;        /* longitud (bytes) de m¢dulo 'runtime' */
-#endif
 
 extern CAB_SINTAC cab;          /* cabecera de fichero de base de datos */
 extern char nf_base_datos[MAXPATH];     /* nombre de fichero base de datos */
 extern BYTE *ptr_proc;          /* puntero auxiliar */
 extern unsigned sgte_ent;       /* desplazamiento de sgte. entrada */
-extern BYTE pro_act;            /* n£mero de proceso actual */
+extern BYTE pro_act;            /* n√∫mero de proceso actual */
 extern unsigned tab_desp_pro[MAX_PRO];  /* tabla desplazamiento de procesos */
 extern BYTE *tab_pro;           /* puntero a inicio zona de procesos */
 extern unsigned tab_desp_msg[MAX_MSG];  /* tabla de desplaz. de mensajes */
@@ -58,21 +55,21 @@ extern BYTE *tab_conx;          /* puntero inicio zona de conexiones */
 extern struct palabra vocabulario[NUM_PAL];
 extern BOOLEAN nueva_ent;
 extern BOOLEAN resp_act;        /* RESP (=1) o NORESP (=0) */
-extern BYTE var[VARS];          /* variables del sistema (8 bits) */
-extern BYTE flag[BANDS];        /* banderas del sistema, 256 banderas */
-extern int modovideo;           /* modo de v°deo */
+extern BYTE flag[FLAGS];          /* variables del sistema (8 bits) */
+extern int modovideo;           /* modo de v√≠deo */
+extern BYTE num_cols;				/* n√∫mero de columnas del modo */
+extern BYTE num_rows;				/* n√∫mero de filas del modo */
 
 /*** Variables globales ***/
-char Car_Pal[]="ABCDEFGHIJKLMNùOPQRSTUVWXYZ0123456789";
+char Car_Pal[]="ABCDEFGHIJKLMN¬•OPQRSTUVWXYZ0123456789";
 char C_No_Sig[]=" !???";        /* caracteres no significativos */
 char C_Separ[]=".,;:\"\'";	/* separadores */
 int ptrp;                       /* puntero de pila */
 BYTE *pila1[STK];               /* para guardar direcciones de retorno */
 unsigned pila2[STK];            /*   "     "    deplz. sgte. entrada */
 BYTE pila3[STK];                /*   "     "    num. de proc. de llamada */
-STC_VV w[N_VENT];               /* tabla para guardar par†metros de ventanas */
+STC_VV w[N_VENT];               /* tabla para guardar par√°metros de ventanas */
 BYTE loc_obj[MAX_OBJ];          /* tabla de localidades act. de objetos */
-BYTE objs_cogidos;              /* n£mero de objetos cogidos */
 BOOLEAN ini_inp=FALSE;          /* se pone a TRUE para indicar a parse() */
 				/* el inicio de frase */
 char frase[MAXLONG];            /* buffer para guardar frase tecleada */
@@ -88,128 +85,138 @@ unsigned char far cardef8x8[256][8];    /* de caracteres */
 unsigned char anchdef8x16[256]; /* tablas con anchuras de caracteres */
 unsigned char anchdef8x8[256];
 
-STC_CONDACTO cd[]={             /* tabla funci¢n-n? par†metros de condacto */
-	0       , 0,            /* condacto 0, reservado para fin entrada */
-	process , 1,
-	done    , 0,
-	notdone , 0,
-	resp    , 0,
-	noresp  , 0,
-	defwin  , 7,
-	window  , 1,
-	clw     , 1,
-	let     , 2,
-	eq      , 2,
-	noteq   , 2,
-	lt      , 2,
-	gt      , 2,
-	mes     , 2,
-	newline , 0,
-	message , 2,
-	sysmess , 1,
-	desc    , 1,
-	add     , 2,
-	sub     , 2,
-	inc     , 1,
-	dec     , 1,
-	set     , 1,
-	clear   , 1,
-	zero    , 1,
-	notzero , 1,
-	place   , 2,
-	get     , 1,
-	drop    , 1,
-	input   , 0,
-	parse   , 0,
-	skip    , 2,
-	at      , 1,
-	notat   , 1,
-	atgt    , 1,
-	atlt    , 1,
-	adject1 , 1,
-	noun2   , 1,
-	adject2 , 1,
-	listat  , 1,
-	isat    , 2,
-	isnotat , 2,
-	present , 1,
-	absent  , 1,
-	worn    , 1,
-	notworn , 1,
-	carried , 1,
-	notcarr , 1,
-	wear    , 1,
-	remove1 , 1,
-	create  , 1,
-	destroy , 1,
-	swap    , 2,
-	restart , 0,
-	whato   , 0,
-	move    , 1,
-	ismov   , 0,
-	goto1   , 1,
-	print   , 1,
-	dprint  , 1,
-	cls     , 0,
-	anykey  , 0,
-	pause   , 1,
-	listobj , 0,
-	firsto  , 0,
-	nexto   , 1,
-	synonym , 2,
-	hasat   , 1,
-	hasnat  , 1,
-	light   , 0,
-	nolight , 0,
-	random1 , 2,
-	seed    , 1,
-	puto    , 1,
-	inkey   , 0,
-	copyov  , 2,
-	chance  , 1,
-	ramsave , 1,
-	ramload , 3,
-	ability , 1,
-	autog   , 0,
-	autod   , 0,
-	autow   , 0,
-	autor   , 0,
-	isdoall , 0,
-	ask     , 3,
-	quit    , 0,
-	save    , 0,
-	load    , 2,
-	exit1   , 1,
-	end1    , 0,
-	printat , 2,
-	saveat  , 0,
-	backat  , 0,
-	newtext , 0,
-	printc  , 1,
-	ink     , 1,
-	paper   , 1,
-	bright  , 1,
-	blink   , 1,
-	color   , 1,
-	debug   , 1,
-	wborder , 2,
-	charset , 1,
-	extern1 , 2,
-	gtime   , 1,
-	time1   , 2,
-	timeout , 0,
-	mode    , 1,
-	graphic , 3,
-	remapc  , 4,
-	setat   , 1,
-	clearat , 1,
-	getrgb  , 4,
-	playfli , 2,
-	mouse   , 1,
-	mousexy , 4,
-	mousebt , 1,
-	play    , 2,
-	music   , 2,
+
+
+
+STC_CONDACTO cd[]={             /* tabla funci√≥n-n? par√°metros de condacto */
+1,at, /*  0 $00 */
+1,notat, /*  1 $01 */
+1,atgt, /*  2 $$02 */
+1,atlt, /*  3 $03 */
+1,present, /*  4 $04 */
+1,absent, /*  5 $05 */
+1,worn, /*  6 $06 */
+1,notworn, /*  7 $07 */
+1,carried, /*  8 $08 */
+1,notcarr, /*  9 $09 */
+1,chance, /* 10 $0a */
+1,zero, /* 11 $0b */
+1,notzero, /* 12 $0c */
+2,eq, /* 13 $0d */
+2,gt, /* 14 $0e */
+2,lt, /* 15 $0f */
+1,adject1, /* 16 $10 */
+1,adverb, /* 17 $11 PENDIENTE */
+2,sfx, /* 18 $12 */
+1,desc, /* 19 $13 */
+0,quit, /* 20 $14 */
+0,end1, /* 21 $15 */
+0,done, /* 22 $16 PENDIENTE DE REPASAR*/
+0,ok, /* 23 $17 */
+0,anykey, /* 24 $18 */
+1,save, /* 25 $19 */
+1,load, /* 26 $1a */
+1,dprint, /* 27 $1b */
+1,display, /* 28 $1c  PENDIENTE, NO IMPLEMENTADO */
+0,cls, /* 29 $1d */
+0,dropall, /* 30 $1e */
+0,autog, /* 31 $1f */
+0,autod, /* 32 $20 */
+0,autow, /* 33 $21 */
+0,autor, /* 34 $22 */
+1,pause, /* 35 $23 */
+2,synonym, /* 36 $24  FALTA VER SI ESTE Y OTROS ACTUALIZAN EL STATUS DE "DONE" */
+1,goto1, /* 37 $25 */
+1,message, /* 38 $26 */
+1,remove1, /* 39 $27 */
+1,get, /* 40 $28 */
+1,drop, /* 41 $29 */
+1,wear, /* 42 $2a */
+1,destroy, /* 43 $2b */
+1,create, /* 44 $2c */
+2,swap, /* 45 $2d */
+2,place, /* 46 $2e */
+1,set, /* 47 $2f */
+1,clear, /* 48 $30 */
+2,plus, /* 49 $31 */
+2,minus, /* 50 $32 */
+2,let, /* 51 $33 */
+0,newline, /* 52 $34 */
+1,print, /* 53 $35 */
+1,sysmess, /* 54 $36 */
+2,isat, /* 55 $37 */
+1,setco, /* 56 $38  COMPROBAR QUE REALMENTE HAY QUE ACTUALIZAR TODOS LOS FLAGS Y NO SOLO EL 51*/
+0,space, /* 57 $39 */
+1,hasat, /* 58 $3a */
+1,hasnat, /* 59 $3b */
+0,listobj, /* 60 $3c */  
+2,extern1, /* 61 $3d */
+0,ramsave, /* 62 $3e */
+1,ramload, /* 63 $3f */
+2,beep, /* 64 $40 */
+1,paper, /* 65 $41 */
+1,ink, /* 66 $42 */
+1,border, /* 67 $43 */
+1,prep, /* 68 $44 FALTA IMPLEMENTAR*/
+1,noun2, /* 69 $45 */
+1,adject2, /* 70 $46 */
+2,add, /* 71 $47 */
+2,sub, /* 72 $48 */
+1,parse, /* 73 $49 pendiente de juntar cin INPUT*/
+1,listat, /* 74 $4a */
+1,process, /* 75 $4b falta poner todo el sistema de pila, doalls, etc.*/
+2,same, /* 76 $4c */
+1,mes, /* 77 $4d */
+1,window, /* 78 $4e */
+2,noteq, /* 79 $4f */
+2,notsame, /* 80 $50 */
+1,mode, /* 81 $51 PENDIENTE PORQUE NO TIENE NADA QUE VER CON EL MODO DE VIDEO*/
+2,winat, /* 82 $52 */  
+2,time, /* 83 $53 */
+1,picture, /* 84 $54 FALTA IMPLEMENTAR*/
+1,doall, /* 85 $55  FALTA */
+1,mouse, /* 86 $56 FALTA: EST√° IMPLEMENTADA como que si el par√°metro es 1 se activa y si no se apaga, documentar*/
+2,gfx, /* 87 $57 */
+2,isnotat, /* 88 $58 */
+2,weigh, /* 89 $59 */
+2,putin, /* 90 $5a FALTA */
+2,takeout, /* 91 $5b FALTA */
+0,newtext, /* 92 $5c */
+2,ability, /* 93 $5d */
+1,weight, /* 94 $5e */
+1,random, /* 95 $5f */
+2,input, /* 96 $60 PENDIENTE */
+0,saveat, /* 97 $61 */
+0,backat, /* 98 $62 */
+2,printat, /* 99 $63 */
+0,whato, /*100 $64 */
+1,call, /*101 $65 PENDIENTE*/
+1,puto, /*102 $66 */
+0,notdone, /*103 $67  FALTA PORQUE NO ESTA HACIENDO EL NOTDONE DE DAAD*/
+1,autop, /*104 $68 FALTA*/
+1,autot, /*105 $69 FALTA*/
+1,move, /*106 $6a PENDIENTE*/
+2,winsize, /*107 $6b */
+0,redo, /*108 $6c */
+0,centre, /*109 $6d */
+1,exit1, /*110 $6e */
+0,inkey, /*111 $6f */
+2,bigger, /*112 $70 */
+2,smaller, /*113 $71 */
+0,isdone, /*114 $72 */
+0,isndone, /*115 $73 */
+1,skip, /*116 $74 FALTA IMPLEMENTAR*/
+0,restart, /*117 $75 */
+1,tab, /*118 $76 */
+2,copyof, /*119 $77 */
+0,dumb1, /*120 $78 */
+2,copyoo, /*121 $79  */
+0,dumb2, /*122 $7a */
+2,copyfo, /*123 $7b */
+0,dumb3, /*124 $7c */
+2,copyff, /*125 $7d */
+2,copybf, /*126 $7e */
+0,reset  /*127 $7f FALTA */
 };
 
 /*** Prototipos de funciones externas ***/
@@ -221,35 +228,55 @@ void m_err(BYTE x, char *m, int flag);
 
 
 /****************************************************************************
-	SETVAR: Asigna un valor a una variable. Este cambio ha sido realizado
-	  por Uto para tratar de compatibilizar con DAAD, ahora todas las 
-	  escrituras de las variables (lo que ser°an los flags en DAAD) pasan
-	  por aqu°.
+	setflag: Asigna un valor a un flag
 ****************************************************************************/
 
-void setvar(BYTE nv, BYTE value)
+void setflag(BYTE flagno, BYTE value)
 {
-	var[nv] = value;
+	flag[flagno] = value;
 }
 
 
 /****************************************************************************
-	GETVAR: Obtiene el valor a una variable. Este cambio ha sido realizado
-	  por Uto para tratar de compatibilizar con DAAD, ahora todas las 
-	  lecturas de las variables (lo que ser°an los flags en DAAD) pasan
-	  por aqu°.
+	setflagbit: Activa un bit de un flag
+****************************************************************************/
+void setflagbit(BYTE nflagnof, BYTE nb)
+{
+	setflag(flagno, getflag(flagno) | (1 << nb));
+}
+
+/****************************************************************************
+	clearflagbit: Desactiva un bit de un flag
+****************************************************************************/
+void clearflagbit(BYTE flagno, BYTE nb)
+{
+	setflag(flagno, getflag(flagno) & (255 - (1 << nb)));
+}
+
+
+/****************************************************************************
+	getflagbit: Obtiene el valor de un bit de un flag 
+****************************************************************************/
+BOOLEAN getflagbit(BYTE flagno, BYTE nb)
+{
+	if (getflag(flagno) & (1 << nb)) return(TRUE); else return(FALSE);
+}
+
+
+/****************************************************************************
+	getflag: Obtiene el valor de un flag
 ****************************************************************************/
 
-BYTE getvar(BYTE nv)
+BYTE getflag(BYTE flagno)
 {
-	return var[nv];
+	return flag[flagno];
 }
 
 
 /****************************************************************************
 	VV_IMPS2: imprime una cadena en una ventana. Las palabras de final de
-	  l°nea que no caben dentro de la ventana se pasan a la l°nea
-	  siguiente. Esta versi¢n de vv_imps tiene en cuenta el car†cter de
+	  l√≠nea que no caben dentro de la ventana se pasan a la l√≠nea
+	  siguiente. Esta versi√≥n de vv_imps tiene en cuenta el car√°cter de
 	  subrayado que puede aparecer en los mensajes de la base de datos y
 	  lo sustituye por el objeto actual.
 	  Entrada:      's' cadena a imprimir
@@ -265,7 +292,7 @@ int i, cuenta=0, anch=0;
 char *pto;
 
 while(1) {
-	/* si se encontr¢ fin de frase, espacio o avance de l°nea */
+	/* si se encontr√≥ fin de frase, espacio o avance de l√≠nea */
 	if(!*s || (*s==' ') || (*s=='\n')) {
 		/* si no hay palabra almacenada */
 		if(!cuenta && *s) {
@@ -280,9 +307,9 @@ while(1) {
 				cuenta++;
 			}
 			/* si la palabra almacenada no cabe en lo que */
-			/* queda de l°nea pero cabe en la siguiente, */
-			/* la imprime en la siguiente l°nea, si no la */
-			/* imprime sin m†s */
+			/* queda de l√≠nea pero cabe en la siguiente, */
+			/* la imprime en la siguiente l√≠nea, si no la */
+			/* imprime sin m√°s */
 			if((anch>((v->lxi*8)-v->cvx)) &&
 			  (anch<=(v->lxi*8))) vv_impc('\n',v);
 			for(i=0; i<cuenta; i++) vv_impc(b[i],v);
@@ -294,7 +321,7 @@ while(1) {
 	}
 	else {
 		if(*s!='_') {
-			/* si letra no es espacio ni avance de l°nea */
+			/* si letra no es espacio ni avance de l√≠nea */
 			/* la guarda */
 			anch+=chr_anchura(*s);
 			b[cuenta]=*s++;
@@ -312,12 +339,12 @@ while(1) {
 				}
 			}
 		}
-		/* si encontr¢ s°mbolo de subrayado */
+		/* si encontr√≥ s√≠mbolo de subrayado */
 		else {
-			/* se salta el s°mbolo de subrayado */
+			/* se salta el s√≠mbolo de subrayado */
 			s++;
 			/* puntero a texto objeto */
-			pto=tab_obj+tab_desp_obj[getvar(8)]+6;
+			pto=tab_obj+tab_desp_obj[getflag(FRFOBJ)]+6;
 			while(*pto) {
 				/* almacena texto objeto */
 				anch+=chr_anchura(*pto);
@@ -345,27 +372,27 @@ while(1) {
 }
 
 /****************************************************************************
-	VV_INPUTT: permite introducir por teclado una l°nea de caracteres con
-	  tiempo l°mite de introducci¢n.
-	  S¢lo admite los caracteres que contenga la cadena 'Cod_Teclas'
+	VV_INPUTT: permite introducir por teclado una l√≠nea de caracteres con
+	  tiempo l√≠mite de introducci√≥n.
+	  S√≥lo admite los caracteres que contenga la cadena 'Cod_Teclas'
 	  (global).
-	  Entrada:      'plin' puntero a buffer d¢nde se almacenar† la
+	  Entrada:      'plin' puntero a buffer d√≥nde se almacenar√° la
 			cadena introducida
-			'maxlong' m†ximo n£mero de caracteres permitidos;
-			deber† ser menor o igual a VVINP_MAXLIN
-			'cursor' car†cter a usar como cursor
+			'maxlong' m√°ximo n√∫mero de caracteres permitidos;
+			deber√° ser menor o igual a VVINP_MAXLIN
+			'cursor' car√°cter a usar como cursor
 			'conver' indica si la cadena tecleada debe ser
-			convertida a may£sculas (VVINP_CONV para convertir,
-			VVINP_NOCONV para dejar como se tecle¢)
+			convertida a may√∫sculas (VVINP_CONV para convertir,
+			VVINP_NOCONV para dejar como se tecle√≥)
 			'v' puntero a ventana
-			'tiempo' tiempo l°mite (segundos) para teclear
-			la frase, si es 0 no habr† tiempo l°mite
+			'tiempo' tiempo l√≠mite (segundos) para teclear
+			la frase, si es 0 no habr√° tiempo l√≠mite
 			'modot' modo de funcionamiento del temporizado;
 			si es 1 el tiempo se cuenta hasta que teclea la
 			primera letra, si es 0 tiene el tiempo dado para
 			teclear toda la frase
-	  Salida:       c¢digo de tecla de funci¢n pulsada, 0 si no se
-			puls¢ ninguna, 1 si se acab¢ por falta de tiempo
+	  Salida:       c√≥digo de tecla de funci√≥n pulsada, 0 si no se
+			puls√≥ ninguna, 1 si se acab√≥ por falta de tiempo
 ****************************************************************************/
 unsigned vv_inputt(char *plin, unsigned maxlong, char cursor, int conver,
   STC_VV *v, int tiempo, int modot)
@@ -378,7 +405,7 @@ BYTE color;
 char *pcur, *pfinl, *i;
 int antx, anty, antlxi, curx, cury, primer_car=1, segundos;
 
-/* guarda posici¢n del cursor y habilita scroll de ventana */
+/* guarda posici√≥n del cursor y habilita scroll de ventana */
 antx=v->cvx;
 anty=v->cvy;
 v->scroll=1;
@@ -387,14 +414,14 @@ v->scroll=1;
 antlxi=v->lxi;
 v->lxi-=2;
 
-/* puntero de la posici¢n del cursor */
+/* puntero de la posici√≥n del cursor */
 pcur=plin;
 
-/* puntero al final de la l°nea */
+/* puntero al final de la l√≠nea */
 pfinl=plin;
 long_lin=1;
 
-/* marca final de l°nea */
+/* marca final de l√≠nea */
 *pfinl='\0';
 
 /* imprime cursor */
@@ -412,8 +439,8 @@ tinicio=biostime(0,0L);
 
 do {
 	/* si se cuenta tiempo total para teclear o se cuenta hasta primer */
-	/* car†cter tecleado y es el primer car†cter, y adem†s el tiempo */
-	/* l°mite no es 0 */
+	/* car√°cter tecleado y es el primer car√°cter, y adem√°s el tiempo */
+	/* l√≠mite no es 0 */
 	if(((modot==0) || ((modot==1) && primer_car)) && tiempo) {
 		/* hasta que pulse una tecla mira el tiempo que ha pasado */
 		do {
@@ -421,9 +448,9 @@ do {
 			tactual=biostime(0,0L);
 			segundos=(int)((tactual-tinicio)/TICKS_SEG);
 
-			/* si se ha pasado el tiempo, sale indic†ndolo */
+			/* si se ha pasado el tiempo, sale indic√°ndolo */
 			if(segundos>tiempo) {
-				/* reimprime la l°nea de input para borrar */
+				/* reimprime la l√≠nea de input para borrar */
 				/* el cursor */
 				/* posiciona el cursor para imprimir */
 				if(v->scroll!=1)
@@ -437,17 +464,17 @@ do {
 					i++;
 				} while(i<=pfinl);
 				/* a?ade espacio al final para compensar la */
-				/* desaparici¢n del cursor */
+				/* desaparici√≥n del cursor */
 				vv_impc('\xff',v);
 
-				/* copia l°nea en buffer */
+				/* copia l√≠nea en buffer */
 				for(pcur=plin, i=buf_lin; *pcur; pcur++, i++) {
 					*i=*pcur;
 				}
 				*i='\0';
 
 				if(conver==VVINP_CONV) {
-					/* convierte l°nea a may£sculas */
+					/* convierte l√≠nea a may√∫sculas */
 					i=plin;
 					while(*i) {
 						*i=mayuscula(*i);
@@ -456,8 +483,8 @@ do {
 				}
 
 				/* si no se produjo scroll en ventana */
-				/* mientras entrada de datos y la posici¢n */
-				/* del cursor es menor que la £ltima l°nea */
+				/* mientras entrada de datos y la posici√≥n */
+				/* del cursor es menor que la √∫ltima l√≠nea */
 				/* de la ventana desactiva indicador de */
 				/* scroll */
 				if((v->scroll==1) &&
@@ -469,15 +496,15 @@ do {
 		} while(!bioskey(1) && !r.boton1 && !r.boton2);
 	}
 
-	/* indica que ha tecleado ya el primer car†cter */
+	/* indica que ha tecleado ya el primer car√°cter */
 	primer_car=0;
 
 	do {
 		c=vv_lee_tecla();
-	} while((c==COD_RAT) && zero(10));
+	} while((c==COD_RAT) && !getflagbit(FFLAGS, FFMOUSEON));
 	switch(c) {
-		case BACKSPACE :        /* borrar car†cter a izquierda */
-			/* comprueba que cursor no estÇ a la izquierda */
+		case BACKSPACE :        /* borrar car√°cter a izquierda */
+			/* comprueba que cursor no est√© a la izquierda */
 			if(pcur!=plin) {
 				pcur--;
 				for(i=pcur; i<pfinl; i++) *i=*(i+1);
@@ -485,8 +512,8 @@ do {
 				long_lin--;
 			}
 			break;
-		case COD_SUP :          /* borrar car†cter a derecha */
-			/* comprueba que cursor no estÇ al final */
+		case COD_SUP :          /* borrar car√°cter a derecha */
+			/* comprueba que cursor no est√© al final */
 			if(pcur!=pfinl) {
 				for(i=pcur; i<pfinl; i++) *i=*(i+1);
 				pfinl--;
@@ -494,18 +521,18 @@ do {
 			}
 			break;
 		case COD_IZQ :          /* mover cursor izquierda */
-			/* comprueba que no estÇ a la izquierda */
+			/* comprueba que no est√© a la izquierda */
 			if(pcur!=plin) pcur--;
 			break;
 		case COD_DER :          /* mover cursor derecha */
-			/* comprueba que no estÇ a la derecha */
+			/* comprueba que no est√© a la derecha */
 			if(pcur!=pfinl) pcur++;
 			break;
 		case COD_ARR :          /* mover cursor arriba */
-			/* si se pasa del inicio, copia l°nea anterior */
-			/* y sit£a cursor al final */
+			/* si se pasa del inicio, copia l√≠nea anterior */
+			/* y sit√∫a cursor al final */
 			if(pcur==plin) {
-				/* borra l°nea anterior */
+				/* borra l√≠nea anterior */
 				if(v->scroll!=1)
 				  v->cvy=anty-((v->scroll-1)*v->chralt);
 				else v->cvy=anty;
@@ -516,7 +543,7 @@ do {
 				for(i=plin; *i; i++) vv_impc(*i,v);
 				v->colort=color;
 
-				/* por si cursor est† al final */
+				/* por si cursor est√° al final */
 				vv_impc('\xff',v);
 
 				pcur=plin;
@@ -543,8 +570,8 @@ do {
 		case COD_FIN :          /* mover cursor al final */
 			pcur=pfinl;
 			break;
-		/* si pulsa una tecla de funci¢n o RETURN */
-		/* acaba la entrada y devuelve su c¢digo (tecla funci¢n) */
+		/* si pulsa una tecla de funci√≥n o RETURN */
+		/* acaba la entrada y devuelve su c√≥digo (tecla funci√≥n) */
 		case RETURN :
 		case COD_RAT :
 		case COD_F1 :
@@ -559,7 +586,7 @@ do {
 		case COD_F10 :
 			break;
 		default :
-			/* inserta car†cter si no se excede longitud m†xima */
+			/* inserta car√°cter si no se excede longitud m√°xima */
 			if(long_lin==maxlong) break;
 			if(pcur!=pfinl) for(i=pfinl; i>pcur; i--) *i=*(i-1);
 			*pcur++=(char)c;
@@ -567,9 +594,9 @@ do {
 			long_lin++;
 			break;
 	}
-	/* si al teclear algo hubo scroll en ventana calcula l°nea */
-	/* de inicio del cursor de acuerdo al n£mero de l°neas */
-	/* 'scrolleadas' (v->scroll), sino coge la antigua posici¢n */
+	/* si al teclear algo hubo scroll en ventana calcula l√≠nea */
+	/* de inicio del cursor de acuerdo al n√∫mero de l√≠neas */
+	/* 'scrolleadas' (v->scroll), sino coge la antigua posici√≥n */
 	/* del cursor 'anty' */
 	if(v->scroll!=1) v->cvy=anty-((v->scroll-1)*v->chralt);
 	else v->cvy=anty;
@@ -580,17 +607,17 @@ do {
 		curx=v->cvx+(v->vxi*8);
 		cury=v->cvy+(v->vyi*v->chralt);
 
-		/* imprime car†cter */
+		/* imprime car√°cter */
 		if(*i) {
 			g_rectangulo(curx,cury,curx+15,cury+v->chralt-1,
 			  v->colortf,G_NORM,1);
 			vv_impc(*i,v);
 		}
 
-		/* si es posici¢n de cursor y no est† al final de */
-		/* la l°nea, lo imprime */
+		/* si es posici√≥n de cursor y no est√° al final de */
+		/* la l√≠nea, lo imprime */
 		if((i==pcur) && (pcur!=pfinl)) {
-			/* si ha cambiado de l°nea */
+			/* si ha cambiado de l√≠nea */
 			if(cury!=(v->cvy+(v->vyi*v->chralt))) {
 				curx=v->cvx+(v->vxi*8)-chr_anchura(*i);
 				cury=v->cvy+(v->vyi*v->chralt);
@@ -601,16 +628,16 @@ do {
 			imp_chr(*i,0xff,0,CHR_AND);
 			imp_chr_pos(curx,cury);
 			imp_chr(cursor,0xff,0,CHR_AND);
-			/* imprime car†cter */
+			/* imprime car√°cter */
 			imp_chr_pos(curx,cury);
 			imp_chr(*i,0,v->colort,CHR_OR);
-			/* imprime cursor sobre car†cter */
+			/* imprime cursor sobre car√°cter */
 			imp_chr_pos(curx,cury);
 			imp_chr(cursor,0,v->colort,CHR_XOR);
 			rg_puntero(RG_MUESTRA);
 		}
 
-		/* siguiente car†cter */
+		/* siguiente car√°cter */
 		i++;
 	} while(i<pfinl);
 
@@ -623,13 +650,13 @@ do {
 		vv_impc(cursor,v);
 	}
 
-	/* imprime un espacio al final (por si se borr¢ un car†cter) */
+	/* imprime un espacio al final (por si se borr√≥ un car√°cter) */
 	vv_impc('\xff',v);
 	vv_impc('\xff',v);
 
 } while((c!=RETURN) && (c!=COD_RAT) && (c<COD_F10));
 
-/* reimprime la l°nea de input para borrar el cursor */
+/* reimprime la l√≠nea de input para borrar el cursor */
 /* posiciona el cursor para imprimir */
 if(v->scroll!=1) v->cvy=anty-((v->scroll-1)*v->chralt);
 else v->cvy=anty;
@@ -640,15 +667,15 @@ do {
 	if(*i) vv_impc(*i,v);
 	i++;
 } while(i<=pfinl);
-/* a?ade espacio al final para compensar la desaparici¢n del cursor */
+/* a?ade espacio al final para compensar la desaparici√≥n del cursor */
 vv_impc('\xff',v);
 
-/* copia l°nea en buffer */
+/* copia l√≠nea en buffer */
 for(pcur=plin, i=buf_lin; *pcur; pcur++, i++) *i=*pcur;
 *i='\0';
 
 if(conver==VVINP_CONV) {
-	/* convierte l°nea a may£sculas */
+	/* convierte l√≠nea a may√∫sculas */
 	i=plin;
 	while(*i) {
 		*i=mayuscula(*i);
@@ -657,24 +684,24 @@ if(conver==VVINP_CONV) {
 }
 
 /* si no se produjo scroll en ventana mientras entrada de datos */
-/* y la posici¢n del cursor es menor que la £ltima l°nea de la ventana */
+/* y la posici√≥n del cursor es menor que la √∫ltima l√≠nea de la ventana */
 /* desactiva indicador de scroll */
 if((v->scroll==1) && (v->cvy<((v->lyi-1)*v->chralt))) v->scroll=0;
 
 v->lxi=antlxi;
 
-/* si termin¢ la l°nea pulsando RETURN devuelve 0, si no devuelve */
-/* el c¢digo de la tecla (o bot¢n del rat¢n) con que se termin¢ */
+/* si termin√≥ la l√≠nea pulsando RETURN devuelve 0, si no devuelve */
+/* el c√≥digo de la tecla (o bot√≥n del rat√≥n) con que se termin√≥ */
 if(c==RETURN) return(0);
 else return(c);
 
 }
 
 /****************************************************************************
-	ESTA_EN: comprueba si un car†cter est† en una cadena.
-	  Entrada:      's' cadena con la que se comprobar† el car†cter
-			'c' car†cter a comprobar
-	  Salida:       TRUE si el car†cter est† en la cadena
+	ESTA_EN: comprueba si un car√°cter est√° en una cadena.
+	  Entrada:      's' cadena con la que se comprobar√° el car√°cter
+			'c' car√°cter a comprobar
+	  Salida:       TRUE si el car√°cter est√° en la cadena
 			FALSE si no
 ****************************************************************************/
 BOOLEAN esta_en(char *s, char c)
@@ -688,11 +715,11 @@ return(FALSE);
 }
 
 /****************************************************************************
-	ESTA_EN_VOC: comprueba si una palabra est† en el vocabulario.
+	ESTA_EN_VOC: comprueba si una palabra est√° en el vocabulario.
 	  Entrada:      'vocab' puntero a tabla de vocabulario
-			'pal_voc' n£mero de palabras en vocabulario
+			'pal_voc' n√∫mero de palabras en vocabulario
 			'pal' puntero a palabra a buscar
-	  Salida:       posici¢n dentro del vocabulario si se encontr¢, si no
+	  Salida:       posici√≥n dentro del vocabulario si se encontr√≥, si no
 			devuelve (NUM_PAL+1) que puede considerarse como
 			palabra no encontrada
 ****************************************************************************/
@@ -712,13 +739,13 @@ return(NUM_PAL+1);
 	  < !???>   caracteres no significativos
 	  <.,;:"'>  separadores
 	  Entrada:      'pfrase' puntero a puntero a frase a analizar
-	  Salida:       'tipo', 'num' tipo y n£mero de la palabra en vocabul.
-			SEPARADOR si encontr¢ un separador
-			FIN_FRASE si encontr¢ final de la frase
-			PALABRA si encontr¢ palabra v†lida de vocabulario
-			TERMINACION como PALABRA pero si adem†s encontr¢ una
-			terminaci¢n en LA, LE o LO
-			NO_PAL si encontr¢ palabra pero no est† en
+	  Salida:       'tipo', 'num' tipo y n√∫mero de la palabra en vocabul.
+			SEPARADOR si encontr√≥ un separador
+			FIN_FRASE si encontr√≥ final de la frase
+			PALABRA si encontr√≥ palabra v√°lida de vocabulario
+			TERMINACION como PALABRA pero si adem√°s encontr√≥ una
+			terminaci√≥n en LA, LE o LO
+			NO_PAL si encontr√≥ palabra pero no est√° en
 			vocabulario
 ****************************************************************************/
 int analiza(char *(*pfrase), BYTE *tipo, BYTE *num)
@@ -735,27 +762,27 @@ if(esta_en(C_Separ,*(*pfrase))) {
 	/* salta caracteres no significativos */
 	for(; esta_en(C_No_Sig,*(*pfrase)); (*pfrase)++);
 
-	/* si hay otro separador detr†s lo salta tambiÇn */
+	/* si hay otro separador detr√°s lo salta tambi√©n */
 	while(esta_en(C_Separ,*(*pfrase))) {
 		(*pfrase)++;
 		/* salta caracteres no significativos */
 		for(; esta_en(C_No_Sig,*(*pfrase)); (*pfrase)++);
 	}
-	/* si detr†s encuentra final de la frase, sale indic†ndolo */
-	/* si no, sale indicando que encontr¢ separador */
+	/* si detr√°s encuentra final de la frase, sale indic√°ndolo */
+	/* si no, sale indicando que encontr√≥ separador */
 	if(!*(*pfrase)) return(FIN_FRASE);
 	else return(SEPARADOR);
 }
 
-/* si encontr¢ fin de frase, lo indica */
+/* si encontr√≥ fin de frase, lo indica */
 if(!*(*pfrase)) return(FIN_FRASE);
 
 /* salta espacios anteriores a palabra */
 for(; *(*pfrase)==' '; (*pfrase)++);
-/* al llegar aqu° *(*pfrase) ser† [A-Z]+ù+[0-9] */
-/* repite mientras no llene palabra y encuentre car†cter v†lido de palabra */
+/* al llegar aqu√≠ *(*pfrase) ser√° [A-Z]+¬•+[0-9] */
+/* repite mientras no llene palabra y encuentre car√°cter v√°lido de palabra */
 do {
-	/* mete car†cter en palabra */
+	/* mete car√°cter en palabra */
 	palabra[i]=*(*pfrase);
 	(*pfrase)++;
 	i++;
@@ -768,35 +795,35 @@ palabra[i]='\0';
 /* desprecia resto de palabra */
 while(esta_en(Car_Pal,*(*pfrase))) (*pfrase)++;
 
-/* comprobamos si la palabra est† en vocabulario */
+/* comprobamos si la palabra est√° en vocabulario */
 *num=0;
 *tipo=0;
 if((i=esta_en_voc(palabra))==NUM_PAL+1) return(NO_PALABRA);
 
-/* si est† en vocabulario coge su n£mero y su tipo */
+/* si est√° en vocabulario coge su n√∫mero y su tipo */
 *num=vocabulario[i].num;
 *tipo=vocabulario[i].tipo;
 
-/* si es una conjunci¢n indica que encontr¢ un separador */
+/* si es una conjunci√≥n indica que encontr√≥ un separador */
 if(*tipo==_CONJ) return(SEPARADOR);
 
-/* si termina en LA, LE o LO indica palabra con terminaci¢n */
+/* si termina en LA, LE o LO indica palabra con terminaci√≥n */
 if((*((*pfrase)-2)=='L') && ((*((*pfrase)-1)=='A') || (*((*pfrase)-1)=='E') ||
   (*((*pfrase)-1)=='O'))) return(TERMINACION);
 /* lo mismo si termina en LAS, LES o LOS */
 else if((*((*pfrase)-1)=='S') && (*((*pfrase)-3)=='L') &&
   ((*((*pfrase)-1)=='A') || (*((*pfrase)-1)=='E') || (*((*pfrase)-1)=='O')))
   return(TERMINACION);
-/* en cualquier otro caso indica que encontr¢ palabra */
+/* en cualquier otro caso indica que encontr√≥ palabra */
 else return(PALABRA);
 
 }
 
 /****************************************************************************
-	PARSE1: analiza la l°nea principal de entrada hasta un separador o
-	  hasta el fin de l°nea.
-	  Entrada:      'frase' conteniendo la l°nea a analizar
-	  Salida:       TRUE si no hay m†s que analizar
+	PARSE1: analiza la l√≠nea principal de entrada hasta un separador o
+	  hasta el fin de l√≠nea.
+	  Entrada:      'frase' conteniendo la l√≠nea a analizar
+	  Salida:       TRUE si no hay m√°s que analizar
 			FALSE si queda texto por analizar
 			Variables 2 a 6 actualizadas convenientemente
 ****************************************************************************/
@@ -809,123 +836,123 @@ int res, f[3], i;
 /* inicializa banderas de palabras */
 for(i=0; i<3; i++) f[i]=0;
 
-nombrelo=getvar(3);        /* guarda nombre para verbo con terminaci¢n */
-adjtlo=getvar(4);          /* guarda adjetivo para verbo con terminaci¢n */
-verbo=getvar(2);           /* guarda verbo por si teclea frase sin Çl */
+nombrelo=getflag(FNOUN);        /* guarda nombre para verbo con terminaci√≥n */
+adjtlo=getflag(FADJECT);          /* guarda adjetivo para verbo con terminaci√≥n */
+verbo=getflag(FVERB);           /* guarda verbo por si teclea frase sin √©l */
 
-/* inicializa variables de sentencia l¢gica */
-for(i=2; i<7; i++) setvar(i,NO_PAL);
+/* inicializa variables de sentencia l√≥gica */
+for(i=2; i<7; i++) setflag(i,NO_PAL);
 
 /* repite hasta fin de frase o separador */
 do {
 	/* analiza una palabra */
 	res=analiza(&lin,&tipo,&num);
 
-	/* si es palabra sin terminaci¢n */
+	/* si es palabra sin terminaci√≥n */
 	if(res==PALABRA) {
-		/* si es verbo y no cogi¢ ninguno, lo almacena */
+		/* si es verbo y no cogi√≥ ninguno, lo almacena */
 		if((tipo==_VERB) && f[_VERB]!=1) {
-			setvar(2,num);
+			setflag(FVERB,num);
 			f[_VERB]=1;
 		}
-		/* s¢lo coge los dos primeros nombres */
+		/* s√≥lo coge los dos primeros nombres */
 		if((tipo==_NOMB) && (f[_NOMB]<2)) {
 			/* almacena nombre 1 en variable 3 */
 			if(!f[_NOMB]) {
-				setvar(3,num);
-				/* si es nombre convertible tambiÇn lo */
-				/* almacena en verbo si no cogi¢ antes */
-				/* ning£n verbo ni otro nombre conv. */
+				setflag(FNOUN,num);
+				/* si es nombre convertible tambi√©n lo */
+				/* almacena en verbo si no cogi√≥ antes */
+				/* ning√∫n verbo ni otro nombre conv. */
 				if((num<cab.n_conv) && !f[_VERB]) {
-					setvar(2,num);
+					setflag(FVERB,num);
 					/* indica que hay nombre convert. */
 					f[_VERB]=2;
-					/* luego lo incrementar† */
+					/* luego lo incrementar√° */
 					f[_NOMB]--;
 				}
 			}
 			/* almacena nombre 2 en variable 5 */
-			if(f[_NOMB]==1) setvar(5,num);
-			/* incrementa n£mero de nombres cogidos */
+			if(f[_NOMB]==1) setflag(FNOUN2,num);
+			/* incrementa n√∫mero de nombres cogidos */
 			f[_NOMB]++;
 		}
-		/* s¢lo coge los dos primeros adjetivos */
+		/* s√≥lo coge los dos primeros adjetivos */
 		if((tipo==_ADJT) && (f[_ADJT]<2)) {
 			/* almacena adjetivo 1 en variable 4 */
-			if(!f[_ADJT]) setvar(4,num);
+			if(!f[_ADJT]) setflag(FADJECT,num);
 			/* almacena adjetivo 2 en variable 6 */
-			if(f[_ADJT]==1) setvar(6,num);
-			/* incrementa n£mero de adjetivos cogidos */
+			if(f[_ADJT]==1) setflag(FADJECT2,num);
+			/* incrementa n√∫mero de adjetivos cogidos */
 			f[_ADJT]++;
 		}
 	}
-	/* si es palabra con terminaci¢n */
+	/* si es palabra con terminaci√≥n */
 	if(res==TERMINACION) {
 		if((tipo==_VERB) && f[_VERB]!=1) {
-			setvar(2,num); /* almacena n£mero verbo en variable 2 */
+			setflag(FVERB,num); /* almacena n√∫mero verbo en variable 2 */
 			f[_VERB]=1; /* indica que ya ha cogido el verbo */
 			/* si nombre anterior no era Propio */
 			/* recupera el nombre anterior y su adjetivo */
 			if(nombrelo>=cab.n_prop) {
-				setvar(3,nombrelo);
-				setvar(4,adjtlo);
+				setflag(FNOUN,nombrelo);
+				setflag(FADJECT,adjtlo);
 				f[_NOMB]++;
 				f[_ADJT]++;
 			}
 		}
-		/* s¢lo coge los dos primeros nombres */
+		/* s√≥lo coge los dos primeros nombres */
 		if((tipo==_NOMB) && (f[_NOMB]<2)) {
 			/* almacena nombre 1 en variable 3 */
 			if(!f[_NOMB]) {
-				setvar(3,num);
-				/* si es nombre convertible tambiÇn lo */
-				/* almacena en verbo si no cogi¢ antes */
-				/* ning£n verbo ni otro nombre conv. */
+				setflag(FNOUN,num);
+				/* si es nombre convertible tambi√©n lo */
+				/* almacena en verbo si no cogi√≥ antes */
+				/* ning√∫n verbo ni otro nombre conv. */
 				if((num<cab.n_conv) && !f[_VERB]) {
-					setvar(2,num);
+					setflag(FVERB,num);
 					/* indica que hay nombre convertible */
 					f[_VERB]=2;
-					/* luego lo incrementar† */
+					/* luego lo incrementar√° */
 					f[_NOMB]--;
 				}
 			}
 			/* almacena nombre 2 en variable 5 */
-			if(f[_NOMB]==1) setvar(5,num);
-			/* incrementa n£mero de nombres cogidos */
+			if(f[_NOMB]==1) setflag(FNOUN2,num);
+			/* incrementa n√∫mero de nombres cogidos */
 			f[_NOMB]++;
 		}
-		/* s¢lo coge los dos primeros adjetivos */
+		/* s√≥lo coge los dos primeros adjetivos */
 		if((tipo==_ADJT) && (f[_ADJT]<2)) {
 			/* almacena adjetivo 1 en variable 4 */
-			if(!f[_ADJT]) setvar(4,num);
+			if(!f[_ADJT]) setflag(FADJECT,num);
 			/* almacena adjetivo 2 en variable 6 */
-			if(f[_ADJT]==1) setvar(6,num);
-			/* incrementa n£mero de adjetivos cogidos */
+			if(f[_ADJT]==1) setflag(FADJECT2,num);
+			/* incrementa n√∫mero de adjetivos cogidos */
 			f[_ADJT]++;
 		}
 	}
 } while((res!=FIN_FRASE) && (res!=SEPARADOR));
 
-/* si tecle¢ una frase sin verbo pero con nombre, pone el verbo anterior */
-if(!f[_VERB] && f[_NOMB]) setvar(2,verbo);
+/* si tecle√≥ una frase sin verbo pero con nombre, pone el verbo anterior */
+if(!f[_VERB] && f[_NOMB]) setflag(FVERB,verbo);
 
-/* si es fin de frase mira si analiz¢ o no lo £ltimo cogido */
+/* si es fin de frase mira si analiz√≥ o no lo √∫ltimo cogido */
 if(res==FIN_FRASE) {
 	if(mas_texto==FALSE) {
 		mas_texto=TRUE;         /* indicador para siguiente llamada */
-		return(FALSE);          /* indica que analice lo £ltimo */
+		return(FALSE);          /* indica que analice lo √∫ltimo */
 	}
-	else return(TRUE);              /* no queda m†s por analizar */
+	else return(TRUE);              /* no queda m√°s por analizar */
 }
 
-/* si es separador, supone que hay m†s texto detr†s */
+/* si es separador, supone que hay m√°s texto detr√°s */
 return(FALSE);
 }
 
 /****************************************************************************
 	PAUSA: realiza una pausa. Si se pulsa una tecla, sale de la pausa,
 	  pero no saca la tecla del buffer de teclado.
-	  Entrada:      'p' tiempo de la pausa en dÇcimas de segundo,
+	  Entrada:      'p' tiempo de la pausa en d√©cimas de segundo,
 			si es 0 se espera a que pulse una tecla
 ****************************************************************************/
 void pausa(clock_t p)
@@ -968,13 +995,13 @@ if(fread(cad_recon,sizeof(char),LONG_RECON_F+1,ffuente)<LONG_RECON_F+1) {
 	return(0);
 }
 
-/* comprueba la versi¢n del fichero */
+/* comprueba la versi√≥n del fichero */
 if(cad_recon[LONG_RECON_F-1]!=recon_fuente[LONG_RECON_F-1]) {
 	fclose(ffuente);
 	return(0);
 }
 
-/* si la versi¢n ha sido v†lida lee las definiciones de los caracteres */
+/* si la versi√≥n ha sido v√°lida lee las definiciones de los caracteres */
 if(fread(&anchdef8x16[0],sizeof(unsigned char),256,ffuente)<256) {
 	fclose(ffuente);
 	return(0);
@@ -1002,7 +1029,7 @@ return(1);
 
 /****************************************************************************
 	CARGA_TABLA_MES: carga una tabla de mensajes.
-	  Entrada:      'nt' n£mero de tabla a cargar
+	  Entrada:      'nt' n√∫mero de tabla a cargar
 	  Salida:       0 si tabla no existe o hubo error, un valor distinto
 			de 0 en otro caso
 ****************************************************************************/
@@ -1013,18 +1040,14 @@ FILE *fbd;
 /* si tabla no existe, sale */
 if(cab.fpos_msg[nt]==(fpos_t)0) return(0);
 
-/* si tabla ya est† cargada, sale */
+/* si tabla ya est√° cargada, sale */
 /* G3.30: lo quitamos a ver si se quita el "bug" de los mensajes descontrolados */
 /*** if(nt==tabla_msg) return(1); */
 
 /* carga tabla de mensajes */
 if((fbd=fopen(nf_base_datos,"rb"))==NULL) return(0);
 
-#if RUNTIME==0
 fseek(fbd,cab.fpos_msg[nt],SEEK_SET);
-#else
-fseek(fbd,cab.fpos_msg[nt]+lng_runtime,SEEK_SET);
-#endif
 if(fread(tab_desp_msg,sizeof(unsigned),(size_t)MAX_MSG,fbd)!=MAX_MSG) {
 	fclose(fbd);
 	return(0);
@@ -1039,20 +1062,269 @@ fclose(fbd);
 codifica((BYTE *)tab_msg,cab.bytes_msg[nt]);
 
 tabla_msg=nt;
-setvar(17,nt);
+
 
 return(1);
 }
+
+
+/****************************************************************************
+	ISCONTAINER: Devuelve si un objeto es contenedor
+	  Entrada: 'objno' numero de objeto
+	  Salida: 1 si lo es, 0 si no
+****************************************************************************/
+BOOLEAN iscontainer(BYTE objno)
+{
+	BYTE std_attrs = getDDBByte(cab.obj_weight_cont_wear_pos + objno);
+	if (std_attrs & 0x40) return (1); 
+	return (0);
+	
+}
+
+/****************************************************************************
+	ISWEARABLE: Devuelve si un objeto es prenda
+	  Entrada: 'objno' numero de objeto
+	  Salida: 1 si lo es, 0 si no
+****************************************************************************/
+BOOLEAN iswearable(BYTE objno)
+{
+	BYTE std_attrs = getDDBByte(cab.obj_weight_cont_wear_pos + objno);
+	if (std_attrs & 0x80) return (1); 
+	return (0);
+	
+}
+
+
+/****************************************************************************
+	GETOBJECTWEIGHT: Devuelve el peso de un objeto
+	  Entrada: 'objno' numero de objeto
+	  Salida: el peso 
+****************************************************************************/
+BOOLEAN getobjectweight(BYTE objno)
+{
+	BYTE std_attrs = getDDBByte(cab.obj_weight_cont_wear_pos + objno);
+	return (std_attrs & 0x3F);
+	
+}
+
+/****************************************************************************
+	GETREALOBJECTWEIGHT: Devuelve el peso de un objeto y si es contenedor
+						  de todo lo que haya dentro recursivamente
+	  Entrada: 'objno' numero de objeto
+	  Salida: el peso 
+****************************************************************************/
+BOOLEAN getrealobjectweight(BYTE objno)
+{
+	BYTE std_attrs = getDDBByte(cab.obj_weight_cont_wear_pos + objno);
+	WORD weight = std_attrs & 0x3F;
+	if (iscontainer(objno) && weight) /* container objects with weight=0 are infinite containers, they can hold as many items as player wants) */
+	  for (int i=0;i<cab.max_obj;i++)
+	    if (loc_obj[i]==objno) weight += getrealobjectweight(i);
+
+	if (weight > 255) return(255); else return(weight);
+}
+
+/****************************************************************************
+	DEFWIN: define una ventana.
+	  Entrada:      'nw' n√∫mero de ventana
+			'cwf, 'cw' colores de fondo y primer plano
+			'wy', 'wx' posici√≥n de esquina superior izquierda
+			(fila, columna) de la ventana; si 255 se centra en
+			pantalla
+			'lx', 'ly' tama?o (ancho y alto) de la ventana; si
+			255 se toman las m√°ximas dimensiones
+****************************************************************************/
+BOOLEAN defwin(BYTE nw, BYTE cwf, BYTE cw, BYTE wy, BYTE wx, BYTE lx, BYTE ly)
+{
+
+	/* ajusta dimensiones para que ocupe toda la pantalla */
+	if(lx==255) lx=num_cols;
+	if(ly==255) ly=num_rows;
+
+	/* ajusta posici√≥n para centrar ventana */
+	if(wx==255) wx=(BYTE)((num_cols-lx)/2);
+	if(wy==255) wy=(BYTE)((num_rows-ly)/2);
+
+	/* ajusta para que entre en pantalla */
+	if(wx>(BYTE)((num_cols)-1)) wx=(BYTE)((num_cols)-1);
+	if(wy>(BYTE)((num_rows)-1)) wy=(BYTE)((num_rows)-1);
+	if((wx+lx)>(num_cols)) lx=(num_cols)-wx;
+	if((wy+ly)>(num_rows)) ly=(num_rows)-wy;
+
+	vv_crea(wy,wx,lx,ly,cwf,cw,NO_BORDE,&w[nw]);
+
+	return(TRUE);
+}
+
+
 
 /*-------------------------------------------------------------------------*/
 /* FUNCIONES PARA LOS CONDACTOS                                            */
 /*-------------------------------------------------------------------------*/
 
 /****************************************************************************
-	PROCESS: ejecuta una llamada a un proceso.
-	  Entrada:      'pro' n£mero de proceso
+	WEIGH: calcula el peso real de un objeto, con sus contenedores, y lo pone en un flag
+	  Entrada: 'objno' el objeto
+	           'flagno' n√∫mero de flag
 ****************************************************************************/
-BOOLEAN process(BYTE prc)
+BOOLEAN weigh(BYTE objno, BYTE flagno)
+{
+	setflag(flagno, getrealobjectweight(objno));
+}
+
+/****************************************************************************
+	WEIGHT: calcula el peso real de los objetos que lleva el jugador y lo pone 
+	        en un flag, nunca superar√° MAX_VAL.
+	  Entrada: 'flagno' n√∫mero de flag
+****************************************************************************/
+BOOLEAN weight(BYTE flagno)
+{
+	WORD w = 0;
+	for (int i=0;i<cab.num_obj;obj++)
+	  if ((loc_obj[i]==LLEVADO) || (loc_obj[i]==COGIDO))
+	  {
+	   w += getrealobjectweight(i);
+	   if (w > MAX_VAL) 
+	   {
+		   setflag(flagno, MAX_VAL);
+		  return(TRUE);
+	   }
+	  }
+	  setflag(nf, w & 0xFF);
+	  return(TRUE);
+}
+
+
+/****************************************************************************
+	RANDOM: pone un valor aleatorio del 1 al 100 en el flag indicado
+	  Entrada: 'flagno' n√∫mero de flag
+****************************************************************************/
+BOOLEAN random(BYTE flagno)
+{
+	setflag(flagno, random(100)+ 1);
+	return(TRUE);
+}
+
+
+/****************************************************************************
+	CALL: llama a una subrutina ensambladorm, pero no est√° soportado
+	  Entrada: 'lsb', 'msb' : address to call, pero no est√° soportado
+****************************************************************************/
+BOOLEAN call(BYTE lsb, BYTE msb)
+{
+	return(TRUE);
+}
+
+/****************************************************************************
+	REDO: reinicia el proceso en curso
+****************************************************************************/
+BOOLEAN redo(void)
+{
+	ptr_entry = getDDBWord(ptr_proc) - 2;
+	return(FALSE); /* Esto hace que se salga de la entrada actual y con lo de la linea anterior al avanzar a la siguiente entrada, volver√° a estar en la primer */
+}
+
+/****************************************************************************
+	CENTRE: deber√≠a centrar el texto, pero no est√° soportado
+****************************************************************************/
+BOOLEAN centre(void)
+{
+	return(TRUE);
+}
+
+
+
+/****************************************************************************
+	BEEP: emite un sonido por el speaker
+	  Entrada: 'dur' duraci√≥n en milisegundos
+	           'frec' frencuencia del sonido
+****************************************************************************/
+BOOLEAN beep(BYTE dur, BYTE freq)
+{
+	sound(freq);
+	delay(dur);
+	nosound();
+	return(TRUE);
+}
+
+
+/****************************************************************************
+	BORDER: no hace nada en este int√©rprete
+	  Entrada: tiene un par√°metro pero no hace nada
+****************************************************************************/
+BOOLEAN border(BYTE p1)
+{
+	return(TRUE);
+}
+
+
+
+
+
+/****************************************************************************
+	SFX: no hace nada en este int√©rprete
+	  Entrada: tiene dos par√°metros pero no hace nada
+****************************************************************************/
+BOOLEAN sfx(BYTE p1, p2)
+{
+	return(TRUE);
+}
+
+
+/****************************************************************************
+	GFX: no hace nada en este int√©rprete
+	  Entrada: tiene dos par√°metros pero no hace nada
+****************************************************************************/
+BOOLEAN gfx(BYTE p1, p2)
+{
+	return(TRUE);
+}
+
+/****************************************************************************
+	DISPLAY: no hace nada en este int√©rprete
+	  Entrada: value
+****************************************************************************/
+BOOLEAN display(BYTE value)
+{
+	return(TRUE);
+}
+
+/****************************************************************************
+	MODE: no hace nada en este int√©rprete
+	Entrada: value
+****************************************************************************/
+BOOLEAN mode(BYTE value)
+{
+	return(TRUE);
+}
+
+/****************************************************************************
+	DROPALL: Deja todos los objetos llevados
+	  
+****************************************************************************/
+BOOLEAN dropall(void)
+{	
+	for (int i=0;i<cab.num_obj;i++)
+	 if (loc_obj[i]==COGIDO) drop(i);
+	return(TRUE);
+}
+
+
+/****************************************************************************
+	OK : muestra el mensaje "OK" y hace un DONE
+****************************************************************************/
+BOOLEAN ok(void)
+{
+	sysmess(15);
+	return(done());
+}
+
+
+/****************************************************************************
+	PROCESS: ejecuta una llamada a un proceso.
+	  Entrada:      'procno' n√∫mero de proceso
+****************************************************************************/
+BOOLEAN process(BYTE procno)
 {
 
 /* si se rebasa la capacidad de pila interna */
@@ -1060,17 +1332,17 @@ if(ptrp==STK) m_err(3,"Rebosamiento de la pila interna",1);
 
 pila1[ptrp]=ptr_proc+2; /* guarda dir. sgte. condacto en proc. actual */
 pila2[ptrp]=sgte_ent;   /*   "    desplazamiento de sgte. entrada */
-pila3[ptrp]=pro_act;    /*   "    n£mero de proceso actual */
+pila3[ptrp]=pro_act;    /*   "    n√∫mero de proceso actual */
 ptrp++;                 /* incrementa puntero de pila */
-pro_act=prc;
+pro_act=procno;
 
-/* direcci¢n del proceso llamado - 2 (que se sumar†) */
+/* direcci√≥n del proceso llamado - 2 (que se sumar√°) */
 ptr_proc=tab_pro+tab_desp_pro[pro_act]-2;
 
 /* indica que no debe ajustar ptr_proc para siguiente entrada */
 nueva_ent=FALSE;
 
-/* saltar† a inicio nueva entrada (la primera del proceso llamado) */
+/* saltar√° a inicio nueva entrada (la primera del proceso llamado) */
 return(FALSE);
 }
 
@@ -1082,11 +1354,11 @@ BOOLEAN done(void)
 
 if(!ptrp) m_err(0,"",1);
 ptrp--;
-/* recupera dir. sgte condacto en proc. que llam¢ - 1 (que se sumar† luego) */
+/* recupera dir. sgte condacto en proc. que llam√≥ - 1 (que se sumar√° luego) */
 ptr_proc=pila1[ptrp]-1;
 
 sgte_ent=pila2[ptrp];   /* desplazamiento de la siguiente entrada */
-pro_act=pila3[ptrp];    /* n£mero de proceso que llam¢ */
+pro_act=pila3[ptrp];    /* n√∫mero de proceso que llam√≥ */
 
 /* indica que no debe ajustar ptr_proc para siguiente entrada */
 nueva_ent=FALSE;
@@ -1106,8 +1378,10 @@ nueva_ent=TRUE;         /* para que ajuste a siguiente entrada */
 return(FALSE);
 }
 
+
+/* PENDIENTE: esto de resp y no resp no es daad */
 /****************************************************************************
-	RESP: activa comprobaci¢n de verbo-nombre al inicio de cada entrada.
+	RESP: activa comprobaci√≥n de verbo-nombre al inicio de cada entrada.
 ****************************************************************************/
 BOOLEAN resp(void)
 {
@@ -1118,7 +1392,7 @@ return(TRUE);
 }
 
 /****************************************************************************
-	NORESP: desactiva comprobaci¢n de verbo-nombre.
+	NORESP: desactiva comprobaci√≥n de verbo-nombre.
 ****************************************************************************/
 BOOLEAN noresp(void)
 {
@@ -1128,394 +1402,534 @@ resp_act=FALSE;
 return(TRUE);
 }
 
+
 /****************************************************************************
-	DEFWIN: define una ventana.
-	  Entrada:      'nw' n£mero de ventana
-			'cwf, 'cw' colores de fondo y primer plano
-			'wy', 'wx' posici¢n de esquina superior izquierda
+	WINAT: define la esquina superior izquierda de la ventana actual
+	  Entrada:  'wy', 'wx' posici√≥n de esquina superior izquierda
 			(fila, columna) de la ventana; si 255 se centra en
 			pantalla
-			'lx', 'ly' tama?o (ancho y alto) de la ventana; si
-			255 se toman las m†ximas dimensiones
 ****************************************************************************/
-BOOLEAN defwin(BYTE nw, BYTE cwf, BYTE cw, BYTE wy, BYTE wx, BYTE lx, BYTE ly)
+BOOLEAN winat(BYTE line, BYTE col)
+{
+	defwin(getflag(FACTWINDOW), 0, 7, line, col, 255, 255);
+}
+
+/****************************************************************************
+	WINSIZE: define ancho y alto de  ventana actual
+	  Entrada:  'wy', 'wx' posici√≥n de esquina superior izquierda
+			(fila, columna) de la ventana; si 255 se centra en
+			pantalla
+****************************************************************************/
+BOOLEAN winat(BYTE height, BYTE width)
 {
 
-/* ajusta dimensiones para que ocupe toda la pantalla */
-if(lx==255) lx=getvar(14);
-if(ly==255) ly=getvar(15);
+	BYTE current = getflag(FACTWINDOW);
 
-/* ajusta posici¢n para centrar ventana */
-if(wx==255) wx=(BYTE)((getvar(14)-lx)/2);
-if(wy==255) wy=(BYTE)((getvar(15)-ly)/2);
-
-/* ajusta para que entre en pantalla */
-if(wx>(BYTE)(getvar(14)-1)) wx=(BYTE)(getvar(14)-1);
-if(wy>(BYTE)(getvar(15)-1)) wy=(BYTE)(getvar(15)-1);
-if((wx+lx)>getvar(14)) lx=getvar(14)-wx;
-if((wy+ly)>getvar(15)) ly=getvar(15)-wy;
-
-vv_crea(wy,wx,lx,ly,cwf,cw,NO_BORDE,&w[nw]);
-
-return(TRUE);
+	w[current].colortf
+	
+	defwin(current, w[current].colortf, w[current].colort, w[current].y, w[current].x, width, height);
 }
+
+
 
 /****************************************************************************
 	WINDOW: selecciona la ventana activa.
-	  Entrada:      'nw' n£mero de ventana
+	  Entrada:      'window' n√∫mero de ventana
 ****************************************************************************/
-BOOLEAN window(BYTE nw)
+BOOLEAN window(BYTE window)
 {
-
-setvar(0,nw);
-
-return(TRUE);
+	setflag(FACTWINDOW,window);
+	return(TRUE);
 }
 
 /****************************************************************************
-	CLW: borra/inicializa una ventana.
-	  Entrada:      'nw' n£mero de ventana
+	CLS: borra/inicializa la ventana actual
+	  Entrada:      'nw' n√∫mero de ventana
 ****************************************************************************/
-BOOLEAN clw(BYTE nw)
+BOOLEAN cls()
 {
-
-vv_cls(&w[nw]);
-
-return(TRUE);
+	vv_cls(&w[getflag(FACTWINDOW)]);
+	return(TRUE);
 }
 
 /****************************************************************************
-	LET: asigna un valor a una variable.
-	  Entrada:      'nv' n£mero de variable
-			'val' valor a asignar
+	LET: asigna un valor a un flag.
+	  Entrada:      'flagno' n√∫mero de flag
+					'val' valor a asignar
 ****************************************************************************/
-BOOLEAN let(BYTE nv, BYTE val)
+BOOLEAN let(BYTE flagno, BYTE val)
 {
-
-setvar(nv,val);
-
-return(TRUE);
+	setflag(flagno,val);
+	return(TRUE);
 }
 
 /****************************************************************************
-	EQ: comprueba si una variable es igual a un valor.
-	  Entrada:      'nv' n£mero de variable
-			'val' valor
-	  Salida:       TRUE si la variable es igual al valor
-			FALSE si es distinta de valor
+	EQ: comprueba si una flag es igual a un valor.
+	  Entrada:      'flagno' n√∫mero de variable
+					'val' valor
+	  Salida:       TRUE si lel flag es igual al valor
+					FALSE si es distinto de valor
 ****************************************************************************/
-BOOLEAN eq(BYTE nv, BYTE val)
+BOOLEAN eq(BYTE flagno, BYTE val)
+{
+	if(getflag(flagno)==val) return(TRUE);
+	return(FALSE);
+}
+
+/****************************************************************************
+	NOTEQ: comprueba si un flag distinto de un valor.
+	  Entrada:      'flagno' n√∫mero de variable
+					'val' valor
+	  Salida:       TRUE si el flag es distinto del valor
+					FALSE si es igual al valor
+****************************************************************************/
+BOOLEAN noteq(BYTE flagno, BYTE val)
+{
+	return(TRUE-eq(nf,val));
+}
+
+
+/****************************************************************************
+	BIGGER: comprueba si una flag es mayor que otro
+	  Entrada:      'flagno1' primer flag
+					'flagno2' segundo flag
+	  Salida:       TRUE si el primer flags tienen  valor mayor que el segundo
+					FALSE si no
+****************************************************************************/
+BOOLEAN bigger(BYTE flagno1, BYTE flagno2)
+{
+	if(getflag(flagno1)>getflag(flagno2)) return(TRUE);
+	return(FALSE);
+}
+
+/****************************************************************************
+	BIGGER: comprueba si una flag es mayor que otro
+	  Entrada:      'flagno1' primer flag
+					'flagno2' segundo flag
+	  Salida:       TRUE si el primer flags tienen  valor menor que el segundo
+					FALSE si no
+****************************************************************************/
+BOOLEAN bigger(BYTE flagno1, BYTE flagno2)
+{
+	if(getflag(flagno1)<getflag(flagno2)) return(TRUE);
+	return(FALSE);
+}
+
+/****************************************************************************
+	SMALLER: comprueba si una flag es menor que otro
+	  Entrada:      'flagno1' primer flag
+					'flagno2' segundo flag
+	  Salida:       TRUE si el primer flag tiene valor menor que el segundo
+					FALSE si no
+****************************************************************************/
+BOOLEAN smaller(BYTE flagno1, BYTE flagno2)
+{
+	if(getflag(flagno1)<getflag(flagno2)) return(TRUE);
+	return(FALSE);
+}
+
+
+/****************************************************************************
+	SAME: comprueba si una flag es igual otro
+	  Entrada:      'flagno1' primer flag
+					'flagno2' segundo flag
+	  Salida:       TRUE si los flags tienen igual valor
+					FALSE si no
+****************************************************************************/
+BOOLEAN same(BYTE flagno1, BYTE flagno2)
+{
+	if(getflag(flagno1)==getflag(flagno2)) return(TRUE);
+	return(FALSE);
+}
+
+/****************************************************************************
+	NOTSAME: comprueba si una flag es igual otro
+	  Entrada:      'flagno1' primer flag
+					'flagno2' segundo flag
+	  Salida:       FALSE si los flags tienen igual valor
+					TRUE si no
+****************************************************************************/
+BOOLEAN notsame(BYTE flagno1, BYTE flagno2)
+{
+	return(TRUE-same(flagno1,flagno2));
+}
+
+/****************************************************************************
+	COPYFO: la posici√≥n del objeto objno es asignada al valor del flag flagno
+			Si el flag vale LOC_ACTUAL se coloca en localidad actual. Si la localidad
+			no existe aun se asigna.
+
+	  Entrada:      'flagno' n√∫mero de flag
+					'objno' objeto
+****************************************************************************/
+BOOLEAN copyfo(BYTE flagno, BYTE objno)
+{
+	if (objno>=cab.num_obj) return(TRUE);
+
+	BYTE old_loc = loc_obj[objno];
+	BYTE new_loc;
+
+	new_loc = getFlag(flagno);
+	if (new_loc == LOC_ACTUAL) new_loc = getflag(FPLAYER);
+
+	if (new_loc ==  old_loc) return(TRUE);
+
+	if (new_loc == COGIDO) setflag(FCARRIEDOBJ, getflag(FCARRIEDOBJ) + 1);
+	if (old_loc == COGIDO) setflag(FCARRIEDOBJ, getflag(FCARRIEDOBJ) - 1);
+
+	loc_obj[objno] = new_loc;
+
+	return(TRUE);
+}
+
+/****************************************************************************
+	COPYOO: la posici√≥n del objeto objno1 es asignada al objeto objno 2
+
+	  Entrada:      'objno1', 'objno2' : los objetos
+****************************************************************************/
+BOOLEAN copyoo(BYTE objno1, BYTE objno2)
+{
+	if ((objno1>=cab.num_obj) || (objno2>=cab.num_obj)) return(TRUE);
+
+	BYTE old_loc = loc_obj[objno2];
+	BYTE new_loc = loc_obj[objno1];
+
+	if (new_loc ==  old_loc) return(TRUE);
+
+	if (new_loc == COGIDO) plus(FCARRIEDOBJ, 1);
+	if (old_loc == COGIDO) minus(FCARRIEDOBJ,1);
+
+	loc_obj[objno] = new_loc;
+
+	return(TRUE);
+}
+
+
+/****************************************************************************
+	COPYFF: copya el contenido del primer flag en el segundo
+	  Entrada:      'flagno1' n√∫mero de flag
+					'flagno2' segundo flag
+****************************************************************************/
+BOOLEAN copyff(BYTE flagno1, BYTE flagno2)
+{
+	setflag(flagno2, getflag(flagno14));
+	return(TRUE);
+}
+
+/****************************************************************************
+	COPYBF: copya el contenido del segundo flag en el primero
+	  Entrada:      'flagno1' n√∫mero de flag
+					'flagno2' segundo flag
+****************************************************************************/
+BOOLEAN copybf(BYTE flagno1, BYTE flagno2)
+{
+	return copyff(flagno2, flagno1)
+}
+
+
+/****************************************************************************
+	LT: comprueba si un flag es menor que un valor.
+	  Entrada:      'flagno' n√∫mero de flag
+					'val' valor
+	  Salida:       TRUE si el flag es menor que valor
+					FALSE si es mayor o igual que valor
+****************************************************************************/
+BOOLEAN lt(BYTE flagno, BYTE val)
 {
 
-if(getvar(nv)==val) return(TRUE);
+if(getflag(flagno)<val) return(TRUE);
 
 return(FALSE);
 }
 
 /****************************************************************************
-	NOTEQ: comprueba si una variable distinta de un valor.
-	  Entrada:      'nv' n£mero de variable
-			'val' valor
-	  Salida:       TRUE si la variable es distinta del valor
-			FALSE si es igual al valor
+	GT: comprueba si un flag es mayor que un valor.
+	  Entrada:      'flagno' n√∫mero de flag
+					'val' valor
+	  Salida:       TRUE si el flag es mayor que valor
+					FALSE si es menor o igual que valor
 ****************************************************************************/
-BOOLEAN noteq(BYTE nv, BYTE val)
+BOOLEAN gt(BYTE flagno, BYTE val)
 {
 
-return(TRUE-eq(nv,val));
-}
-
-/****************************************************************************
-	LT: comprueba si una variable es menor que un valor.
-	  Entrada:      'nv' n£mero de variable
-			'val' valor
-	  Salida:       TRUE si la variable es menor que valor
-			FALSE si es mayor o igual que valor
-****************************************************************************/
-BOOLEAN lt(BYTE nv, BYTE val)
-{
-
-if(getvar(nv)<val) return(TRUE);
-
-return(FALSE);
-}
-
-/****************************************************************************
-	GT: comprueba si una variable es mayor que un valor.
-	  Entrada:      'nv' n£mero de variable
-			'val' valor
-	  Salida:       TRUE si la variable es mayor que valor
-			FALSE si es menor o igual que valor
-****************************************************************************/
-BOOLEAN gt(BYTE nv, BYTE val)
-{
-
-if(getvar(nv)>val) return(TRUE);
+if(getflag(flagno)>val) return(TRUE);
 
 return(FALSE);
 }
 
 /****************************************************************************
 	MES: imprime un mensaje.
-	  Entrada:      'nt' n£mero de tabla de mensajes
-			'nm' n£mero de mensaje
+	  Entrada:     'nm' n√∫mero de mensaje
 ****************************************************************************/
-BOOLEAN mes(BYTE nt, BYTE nm)
+BOOLEAN mes(BYTE mesno)
 {
 char *pm;
+BYTE nt = 0; /* Tabla 0 de mensajes */
 
 /* si tabla es distinta a la que hay cargada, la carga */
-if(nt!=getvar(17)) {
+if(nt!=tabla_msg) {
 	if(!carga_tabla_mes(nt)) return(TRUE);
 }
 
 /* comprueba si mensaje existe en tabla, si no sale */
 if(nm>=cab.num_msg[nt]) return(TRUE);
 
-pm=tab_msg+tab_desp_msg[nm];    /* puntero a mensaje */
-vv_imps2(pm,&w[getvar(0)]);        /* imprime mensaje en ventana activa */
+pm=tab_msg+tab_desp_msg[mesno];    /* puntero a mensaje */
+vv_imps2(pm,&w[getflag(FDARK)]);        /* imprime mensaje en ventana activa */
 
 return(TRUE);
 }
 
 /****************************************************************************
-	NEWLINE: imprime un avance de l°nea.
+	NEWLINE: imprime un avance de l√≠nea.
 ****************************************************************************/
 BOOLEAN newline(void)
 {
 
-vv_impc('\n',&w[getvar(0)]);
+vv_impc('\n',&w[getflag(0)]);
 
 return(TRUE);
 }
 
 /****************************************************************************
-	MESSAGE: imprime un mensaje con avance de l°nea.
-	  Entrada:      'nt' n£mero de tabla de mensajes
-			'nm' n£mero de mensaje
+	MESSAGE: imprime un mensaje con avance de l√≠nea.
+	  Entrada:      
+			'mesno' n√∫mero de mensaje
 ****************************************************************************/
-BOOLEAN message(BYTE nt, BYTE nm)
+BOOLEAN message(BYTE mesno)
 {
-
-mes(nt,nm);                     /* imprime mensaje */
-newline();                      /* y avance de l°nea */
-
-return(TRUE);
+	mes(mesno);                     /* imprime mensaje */
+	newline();                      /* y avance de l√≠nea */
+	return(TRUE);
 }
 
 /****************************************************************************
 	SYSMESS: imprime un mensaje del sistema.
-	  Entrada:      'nm' n£mero de mensaje
+	  Entrada:      'nm' n√∫mero de mensaje
 ****************************************************************************/
 BOOLEAN sysmess(BYTE nm)
 {
 char *pm;
 
-pm=tab_msy+tab_desp_msy[nm];    /* puntero a mensaje */
-vv_imps2(pm,&w[getvar(0)]);        /* imprime mensaje en ventana activa */
+pm &DDB[cab.pos_sys + 2 * nm]; /* puntero a mensaje */
+vv_imps2(pm,&w[getflag(FDARK)]);        /* imprime mensaje en ventana activa */
 
 return(TRUE);
 }
 
 /****************************************************************************
-	DESC: imprime la descripci¢n de una localidad y salta al inicio del
-	  Proceso 0. Si est† oscuro imprime el mensaje del sistema 23.
-	  Entrada:      'nl' n£mero de localidad
+	DESC: imprime la descripci√≥n de una localidad 
+	 	  Entrada:      'locno' n√∫mero de localidad
 ****************************************************************************/
-BOOLEAN desc(BYTE nl)
+BOOLEAN desc(BYTE locno)
 {
 char *pl;
 
-/* puntero a descripci¢n de localidad */
-pl=tab_loc+tab_desp_loc[nl];
+/* puntero a descripci√≥n de localidad */
+pl = &DDB[getDDBWord(cab.pos_loc+2*locno)];
 
-/* si no est† oscuro o hay una fuente de luz imprime descripci¢n */
-if(zero(0) || light()) vv_imps2(pl,&w[getvar(0)]);
-else sysmess(23);       /* 'Est† oscuro. No puedes ver nada.' */
+/* escribe la descripci√≥n */
+vv_imps2(pl,&w[getflag(FDARK)]);
 
-/* indica que hay que inicializar: borrar ventana, listar objetos... */
-clear(2);
+return(TRUE);
+}
 
-restart();              /* salta al inicio de Proceso 0 */
+/****************************************************************************
+	ADD: suma el valor del flag 1 al flag 2, el tope es 255.
+	Entrada:      'flagno1' n√∫mero de flag
+				'flagno2' bnumero de flag 2
+****************************************************************************/
+BOOLEAN add(BYTE flagno1, BYTE flagno2)
+{
+	WORD total = getflag(flagno1) + getflag(flagno2);
 
-/* -1 a ptr_proc (y -1 del restart), luego se sumar†n 2 */
-ptr_proc--;
+	if (total < MAX_VAL) setflag(flagno2, total & 0xFF);
+					else setflag(flagno2, MAX_VAL);
 
+return(TRUE);
+}
+
+/****************************************************************************
+	SUB: resta el valor del primer flag al segundo. El tope es 0.
+	  Entrada:      'flagno1' n√∫mero de flag
+					'flagno2' n√∫mero de segundo flag
+****************************************************************************/
+BOOLEAN sub(BYTE flagno1, BYTE flagno2)
+{
+
+if (getflag(flagno2)<=getflag(flagno1)) setflag(flagno2, 0);
+		else setflag(flagno2, getflag(flagno1) - getflag(flagno2));
+
+return(TRUE);
+}
+
+/****************************************************************************
+	PLUS: incrementa en value el valor de un flag. Si pasa de 255 se queda en 
+	      255
+	  	Entrada: 'flagno' n√∫mero de flag
+				 'value' : valor a incrementar.
+****************************************************************************/
+BOOLEAN plus(BYTE flagno, BYTE value)
+{
+
+if (getflag(flagno) + value > MAX_VAL) setflag(flagno, MAX_VAL);
+	else setflag(flagno, getflag(flagno) + value);
+return(TRUE);
+}
+
+/****************************************************************************
+	MINUS: decrementa en value el valor de un flag. Si baja de 0 se queda en 0
+	  	Entrada: 'flagno' n√∫mero de flag
+				 'value' : valor a restar.
+****************************************************************************/
+BOOLEAN minus(BYTE flagno, BYTE value)
+{
+
+if (getflag(flagno) <= value) setflag(flagno, 0);
+	else setflag(flagno, getflag(flagno) - value);
+return(TRUE);
+}
+
+
+/****************************************************************************
+	SETCO: pone el objeto referenciado
+	  	Entrada: 'objno' objeto referenciado
+****************************************************************************/
+BOOLEAN setco(BYTE objno)
+{
+	BYTE std_attrs;
+	BYTE user_attrs;
+
+	if (objno >= cab.num_obj) return(TRUE);
+	setflag(FRFOBJ, objno);
+	setflag(FRFOBJLOC,loc_obj[objno]);
+	if (iswearable(objno)) setflag(FRFOBJWEAR,128); else setflag(FRFOBJWEAR,0);
+	if (iscontainer(objno)) setflag(FRFOBJCONT,128); else setflag(FRFOBJCONT,0);
+	setflag(FRFOBJWEIG, getobjectweight());
+	user_attrs = cab.obj_att_pos + 2 * objno;
+	setflag(FRFOBJATTRL) = getDDByte(user_attrs);
+	setflag(FRFOBJATTRH) = getDDByte(user_attrs + 1);
+	
+return(TRUE);
+}
+
+/****************************************************************************
+	PICTURE: pinta una imagen, si no existe la imagen es una condici√≥n que falla
+	   	  	Entrada: 'picno': n√∫mero de imagen.
+		  			 
+****************************************************************************/
+BOOLEAN PICTURE(picno)
+{
+	return(TRUE);
+}
+
+/****************************************************************************
+	TIME: gestiona el timeout del input
+	   	  Entrada: 'duration' en segundos antes de hacer timeout
+		  			'opcion': bit 1: solo timeout si no hemos tecleado nada
+					          bit 2: puede ocurrir mientras se espera por una tecla en More...
+							  bit 3: puede ocurrir en un ANYKEY
+****************************************************************************/
+BOOLEAN time(BYTE duration, BYTE option)
+{
+	setflag(FTIMEOUT, duration);
+	BYTE timeout_flag = getflag(FTIMEOUTFLG) & 0xF8;
+	option = option & 0x07;
+	setflag(FTIMEOUTFLG,timeout_flag | option);
+	return(TRUE);
+}
+
+/****************************************************************************
+	SPACE: escribe un espacio
+****************************************************************************/
+BOOLEAN space(void)
+{
+	vv_impc(' ',&w[getflag(0)]);
+	return(TRUE);
+}
+
+
+/****************************************************************************
+	SET: pone a MAX_VAL un flag.
+	  Entrada:      'flagno' n√∫mero de flag
+****************************************************************************/
+BOOLEAN set(BYTE flagno)
+{
+	setflag(flagno, MAX_VAL);
+	return(TRUE);
+}
+
+
+
+/****************************************************************************
+	CLEAR: pone a 0 un flag.
+	  Entrada:   'flagno' n√∫mero de flag
+****************************************************************************/
+BOOLEAN clear(BYTE flagno)
+{
+	setflag(flagno,0);
+	return(TRUE);
+}
+
+
+/****************************************************************************
+	ZERO: comprueba si un flag es 0.
+	  Entrada:      'flagno' n√∫mero de flag
+	  Salida:       TRUE si el flag es 0
+					FALSE si el flag no es 0
+****************************************************************************/
+BOOLEAN zero(BYTE flagno)
+{
+
+if (!getflag(flagno)) return (TRUE);
 return(FALSE);
 }
 
-/****************************************************************************
-	ADD: suma un valor a una variable.
-	  Entrada:      'nv' n£mero de variable
-			'val' valor a sumar
-****************************************************************************/
-BOOLEAN add(BYTE nv, BYTE val)
-{
 
-#ifdef DAAD
-if (getvar(nv)+val <= MAX_VAL)
-#endif
-setvar(nv, getvar(nv)+val);
-#ifdef DAAD
-else setvar(nv, MAX_VAL)
-#endif
-
-return(TRUE);
-}
-
-/****************************************************************************
-	SUB: resta un valor a una variable.
-	  Entrada:      'nv' n£mero de variable
-			'val' valor a restar
-****************************************************************************/
-BOOLEAN sub(BYTE nv, BYTE val)
-{
-
-#ifdef DAAD
-if (getvar(nv)-val >= 0)
-#endif
-setvar(nv, getvar(nv)-val);
-#ifdef DAAD
-else setvar(nv, 0)
-#endif
-
-return(TRUE);
-}
-
-/****************************************************************************
-	INC: incrementa en 1 el valor de una variable.
-	  Entrada:      'nv' n£mero de variable
-****************************************************************************/
-BOOLEAN inc(BYTE nv)
-{
-
-add(nv, 1);
-
-return(TRUE);
-}
-
-/****************************************************************************
-	DEC: decrementa en 1 el valor de una variable.
-	  Entrada:      'nv' n£mero de variable
-****************************************************************************/
-BOOLEAN dec(BYTE nv)
-{
-
-sub(nv,1);
-
-return(TRUE);
-}
-
-/****************************************************************************
-	SET: pone a 1 una bandera.
-	  Entrada:      'nf' n£mero de bandera
-****************************************************************************/
-BOOLEAN set(BYTE nf)
-{
-#ifndef DAAD
-BYTE mascara_set=0x80;
-int nbyte, nbit;
-
-nbyte=nf/8;                     /* n£mero de byte */
-nbit=nf%8;                      /* bit dentro del byte */
-
-mascara_set>>=nbit;
-flag[nbyte]|=mascara_set;
-#else
-setvar(nf, MAX_VAL);
-#endif
-
-return(TRUE);
-}
 
 
 /****************************************************************************
-	CLEAR: pone a 0 una bandera.
-	  Entrada:      'nf' n£mero de bandera
+	NOTZERO: comprueba si una flag es 1.
+	  Entrada:      'flagno' n√∫mero de flag
+	  Salida:       TRUE si el flag no es 0 
+					FALSE si el flag es 0
 ****************************************************************************/
-BOOLEAN clear(BYTE nf)
+BOOLEAN notzero(BYTE flagno)
 {
-#ifndef DAAD
-BYTE mascara_clr=0x80;
-int nbyte, nbit;
-
-nbyte=nf/8;                     /* n£mero de byte */
-nbit=nf%8;                      /* bit dentro del byte */
-
-mascara_clr>>=nbit;                     /* desplaza hacia derecha (a?ade 0) */
-mascara_clr=(BYTE)0xff-mascara_clr;     /* complementa mascara_clr */
-flag[nbyte]&=mascara_clr;
-#else
-setvar(nf,0);
-#endif
-
-return(TRUE);
+return(TRUE-zero(flagno));
 }
 
-/****************************************************************************
-	ZERO: comprueba si una bandera es 0.
-	  Entrada:      'nf' n£mero de bandera
-	  Salida:       TRUE si la bandera es 0
-			FALSE si la bandera es 1
-****************************************************************************/
-BOOLEAN zero(BYTE nf)
-{
-#ifndef DAAD
-BYTE mascara=0x80;
-int nbyte, nbit;
 
-nbyte=nf/8;
-nbit=nf%8;
-mascara>>=nbit;
-
-if(!(flag[nbyte] & mascara)) return(TRUE);
-#else
-if (getvar(nf)==0) return(TRUE);
-#endif
-
-return(FALSE);
-}
-
-/****************************************************************************
-	NOTZERO: comprueba si una bandera es 1.
-	  Entrada:      'nf' n£mero de bandera
-	  Salida:       TRUE si la bandera es 1
-			FALSE si la bandera es 0
-****************************************************************************/
-BOOLEAN notzero(BYTE nf)
-{
-return(TRUE-zero(nf));
-}
 
 /****************************************************************************
 	PLACE: coloca un objeto en una localidad.
-	  Entrada:      'nobj' n£mero de objeto
-			'nloc' n£mero de localidad
+	  Entrada:      'objno' n√∫mero de objeto
+			'nloc' n√∫mero de localidad
 ****************************************************************************/
-BOOLEAN place(BYTE nobj,BYTE nloc)
+BOOLEAN place(BYTE objno,BYTE nloc)
 {
 BYTE locobj;
 
 /* coge la localidad actual del objeto */
-locobj=loc_obj[nobj];
+locobj=loc_obj[objno];
 
 /* si se refiere a localidad actual sustituye por su valor */
-if(nloc==LOC_ACTUAL) nloc=getvar(1);
+if(nloc==LOC_ACTUAL) nloc=getflag(FPLAYER);
 
 /* si localidad actual de objeto es igual a la de destino, no hace nada */
 if(nloc==locobj) return(TRUE);
 
-/* si pasa un objeto a cogido o puesto y no estaba ni cogido ni puesto */
-/* incrementa el n£mero de objetos que lleva */
-if(((nloc==COGIDO) || (nloc==PUESTO)) && (locobj!=COGIDO) &&
-  (locobj!=PUESTO)) objs_cogidos++;
+/* si pasa un objeto a cogido incrementa el n√∫mero de objetos que lleva */
+if (nloc==COGIDO)
+  if (getflag(FCARRIEDOBJ)<MAX_VAL) 
+    setflag(FCARRIEDOBJ, getflag(FCARRIEDOBJ)+1);
 
-/* si el objeto estaba cogido o puesto y no lo pasa a cogido ni a puesto */
-/* decrementa el n£mero de objetos que lleva */
-if(((locobj==COGIDO) || (locobj==PUESTO)) && (nloc!=COGIDO) &&
-  (nloc!=PUESTO)) objs_cogidos--;
+/* si un objeto pasa a no cogido incrementa el n√∫mero de objetos que lleva */
+if ((nloc!=COGIDO) && (locobj==COGIDO)) 
+    if (getflag(FCARRIEDOBJ)) 
+       setflag(FCARRIEDOBJ, getflag(FCARRIEDOBJ)-1);
 
-/* actualiza posici¢n del objeto */
+/* actualiza posici√≥n del objeto */
 loc_obj[nobj]=nloc;
 
 return(TRUE);
@@ -1523,113 +1937,155 @@ return(TRUE);
 
 /****************************************************************************
 	GET: coge un objeto.
-	  Entrada:      'nobj' n£mero de objeto
+	  Entrada:      'nobj' n√∫mero de objeto
 	  Salida:       TRUE si se pudo coger el objeto
 			FALSE si no se pudo coger
-	  NOTA: la variable 8 contendr† el n£mero del objeto a la salida
+	  NOTA: el flag 8 contendr√° el n√∫mero del objeto a la salida
 ****************************************************************************/
-BOOLEAN get(BYTE nobj)
+BOOLEAN get(BYTE objno)
 {
 
 /* si el objeto no existe */
-if(nobj>=cab.num_obj) {
-	sysmess(1);             /* 'Aqu° no est† eso.' */
+if(objno>=cab.num_obj) {
+	sysmess(26);             /* 'No veo eso por aqu√≠.' */
 	return(FALSE);
 }
 
-/* coloca el n£mero del objeto en la variable 8 */
-setvar(8,nobj);
+/* coloca el n√∫mero del objeto en el flag 8 */
+setflag(FRFOBJ,objno);
 
-/* si ya ten°a el objeto */
-if(carried(nobj) || worn(nobj)) {
-	sysmess(3);             /* 'Ya tienes eso.' */
+/* si ya ten√≠a el objeto */
+if(carried(objno) || worn(objno)) {
+	sysmess(25);             /* 'Ya tengo _.' */
 	return(FALSE);          /* debe hacer un DONE */
 }
 
-/* si el objeto no est† presente */
-if(loc_obj[nobj]!=getvar(1)) {
-	sysmess(1);             /* 'Aqu° no est† eso.' */
+/* si el objeto no est√° presente */
+if(loc_obj[objno]!=getflag(FPLAYER)) {
+	sysmess(26);             /* 'No veo eso por aqu√≠.' */
 	return(FALSE);          /* debe hacer un DONE */
 }
 
 /* si lleva muchas cosas */
-if((objs_cogidos>=getvar(7)) && (getvar(7)!=0)) {
-	sysmess(2);     /* 'No puedes coger _. Llevas demasiadas cosas.' */
+if((getflag(FCARRIEDOBJ)>=getflag(FABILITY)) && (getflag(FABILITY)!=0)) {
+	sysmess(27);     /* 'No puedo llevar nada m√°s.' */
 	return(FALSE);  /* debe hacer un DONE */
 }
 
 /* coge el objeto */
-place(nobj,COGIDO);
-sysmess(0);             /* 'Has cogido _.' */
+place(objno,COGIDO);
+sysmess(26);             /* He cogido _. */
 
 return(TRUE);
 }
 
 /****************************************************************************
 	DROP: deja un objeto.
-	  Entrada:      'nobj' n£mero de objeto
+	  Entrada:      'objno' n√∫mero de objeto
 	  Salida:       TRUE si se pudo dejar el objeto
 			FALSE si no se pudo dejar
-	  NOTA: la variable 8 contendr† el n£mero del objeto a la salida
+	  NOTA: el flag 8 contendr√° el n√∫mero del objeto a la salida
 ****************************************************************************/
-BOOLEAN drop(BYTE nobj)
+BOOLEAN drop(BYTE objno)
 {
 
 /* si el objeto no existe */
-if(nobj>=cab.num_obj) {
-	sysmess(5);                     /* 'No tienes eso.' */
+if(objno>=cab.num_obj) {
+	sysmess(28);                     /* 'No tengo eso.' */
 	return(FALSE);
 }
 
-/* coloca el n£mero del objeto en la variable 8 */
-setvar(8,nobj);
+/* coloca el n√∫mero del objeto en el flag 8 */
+setflag(FRFOBJ,objno);
 
-/* si no cogido ni puesto */
-if(notcarr(nobj) && notworn(nobj)) {
-	sysmess(5);                     /* 'No tienes eso.' */
+/* puesto */
+if(wron(objno))) 
+{
+	sysmess(24);                     /* No puedo. Tengo puesto _. */
 	return(FALSE);                  /* debe hacer un DONE */
 }
 
-/* si lleva el objeto cogido o puesto, lo deja en loc. actual */
-place(nobj,getvar(1));
-sysmess(4);                             /* 'Dejas _.' */
+/* si no cogido */
+if(notcarr(objno))) 
+{
+	sysmess(28);                     /* 'No tengo eso.' */
+	return(FALSE);                  /* debe hacer un DONE */
+}
+
+/* si lleva el objeto cogido, lo deja en loc. actual */
+place(objno,getflag(FPLAYER));
+sysmess(39);                             /* 'He dejado _.' */
 
 return(TRUE);
 }
 
+
 /****************************************************************************
-	INPUT: recoge texto del jugador.
-	  Entrada:      variable 16 con el tiempo l°mite para teclear la
-			frase, bandera 6 con el modo de temporizaci¢n
-	  Salida:       TRUE si no tecle¢ nada o se pas¢ tiempo l°mite
-			FALSE si tecle¢ algo
-	  NOTA: la variable 12 contendr† el c¢digo de la tecla de funci¢n que
-	  se puls¢ durante el INPUT
+	BORRA_SL: pone todos los flags de vocabulario a NO_PAL
+/****************************************************************************/
+void borra_SL(void)
+{
+setflag(FVERB, NO_PAL);
+setflag(FNOUN, NO_PAL);
+setflag(FADJECT, NO_PAL);
+setflag(FNOUN2, NO_PAL);
+setflag(FADJECT2, NO_PAL);
+setflag(FADVERB, NO_PAL);
+setflag(FPREP, NO_PAL);
+}
+
+
+/****************************************************************************
+    INPUT: no implementado
+****************************************************************************/	
+BOOLEAN input(BYTE stream, BYTE option)
+{
+	return (TRUE);
+}
+
+
+/****************************************************************************
+	INPUTPARSE: recoge texto del jugador.
+	  Entrada:      variable 16 con el tiempo l√≠mite para teclear la
+			frase, FTIMEOUT-FFSTART con el modo de temporizaci√≥n
+	  Salida:       TRUE si no tecle√≥ nada o se pas√≥ tiempo l√≠mite
+			FALSE si tecle√≥ algo
+	  NOTA: el flag 12 contendr√° el c√≥digo de la tecla de funci√≥n que
+	  se puls√≥ durante el INPUT
 ****************************************************************************/
-BOOLEAN input(void)
+BOOLEAN inputparse(void)
 {
 int i, modo_temp;
 unsigned k;
 
-/* inicializa sentencia l¢gica */
-for(i=2; i<7; i++) setvar(i,NO_PAL);
-
+/* inicializa sentencia l√≥gica */
+borra_SL();
 ini_inp=TRUE;           /* indica a parse() inicio de frase */
-mas_texto=FALSE;        /* usada por parse1() para analizar £ltima frase */
+mas_texto=FALSE;        /* usada por parse1() para analizar √∫ltima frase */
 
-/* modo de temporizaci¢n de INPUT */
-if(zero(6)) modo_temp=0;
+/* modo de temporizaci√≥n de INPUT */
+if(getflagbit(FTIMEOUTFLG, FTSTART)) modo_temp=0;
 else modo_temp=1;
 
-/* NOTA: el cursor ser† el primer car†cter del mensaje del sistema 7 */
-k=vv_inputt(frase,MAXLONG,*(tab_msy+tab_desp_msy[7]),VVINP_CONV,&w[getvar(0)],
-  (int)getvar(16),modo_temp);
+/* NOTA: el cursor ser√° el primer car√°cter del mensaje del sistema 7 */
+k=vv_inputt(frase,MAXLONG,*(tab_msy+tab_desp_msy[7]),VVINP_CONV,&w[getflag(FDARK)],
+  (int)getflag(FTIMEOUT),modo_temp);
 
-/* guarda c¢digo con que termin¢ INPUT */
-setvar(12,(BYTE)k);
+/* guarda c√≥digo con que termin√≥ INPUT si estamos en modo SINTAC*/
+if(getflagbit(FFLAGS, 0)) setflag(FINPUT,(BYTE)k);
 
-/* si no tecle¢ nada o se pas¢ el tiempo l°mite */
-if(!*frase || (getvar(12)==1)) return(TRUE);
+/* si no tecle√≥ nada o se pas√≥ el tiempo l√≠mite */
+if(getflagbit(FFLAGS, 0)) /* Si modo SINTAC */
+{
+	if(!*frase || (getflag(12)==1)) return(TRUE);
+}
+else
+{
+	if(!*frase) return(TRUE);
+}
+
+
+
 
 return(FALSE);
 }
@@ -1639,9 +2095,9 @@ return(FALSE);
 	  Entrada:      variables globales.-
 			  'frase' conteniendo frase tecleada
 			  'ini_inp' TRUE si hay que analizar desde principio,
-			  FALSE si sigue donde lo dej¢ en £ltima llamada
-	  Salida:       TRUE si se analiz¢ toda la frase
-			FALSE si queda m†s por analizar
+			  FALSE si sigue donde lo dej√≥ en √∫ltima llamada
+	  Salida:       TRUE si se analiz√≥ toda la frase
+			FALSE si queda m√°s por analizar
 ****************************************************************************/
 BOOLEAN parse(void)
 {
@@ -1649,12 +2105,12 @@ BOOLEAN par;
 
 /* si inicio de frase */
 if(ini_inp==TRUE) {
-	/* coloca puntero al principio de l°nea tecleada */
+	/* coloca puntero al principio de l√≠nea tecleada */
 	lin=frase;
 	ini_inp=FALSE;
 }
 
-/* analiza hasta separador o fin l°nea */
+/* analiza hasta separador o fin l√≠nea */
 par=parse1();
 
 return(par);
@@ -1662,44 +2118,34 @@ return(par);
 
 /****************************************************************************
 	SKIP: salto relativo dentro de un proceso.
-	  Entrada:      'lsb', 'hsb' bytes bajo y alto del desplazamiento del
-			salto (-32768 a 32767)
+	  Entrada:      offset de la entrada
 ****************************************************************************/
-BOOLEAN skip(BYTE lsb, BYTE hsb)
+BOOLEAN skip(BYTE offset)
 {
 int despli;
 
-/* calcula desplazamiento */
-despli=(hsb << 8) | lsb;
-
-/* ptr_por - 3 que se sumar†n luego */
-ptr_proc=ptr_proc+despli-3;
-
-/* para que no ajuste ptr_proc a siguiente entrada */
-nueva_ent=FALSE;
-
-return(FALSE);          /* saltar† a inicio de entrada */
+return(FALSE);          /* saltar√° a inicio de entrada */
 }
 
 /****************************************************************************
-	AT: comprueba si est† en una localidad.
-	  Entrada:      'locno' n£mero de localidad
-	  Salida:       TRUE si est† en esa localidad
-			FALSE si no est† en esa localidad
+	AT: comprueba si est√° en una localidad.
+	  Entrada:      'locno' n√∫mero de localidad
+	  Salida:       TRUE si est√° en esa localidad
+			FALSE si no est√° en esa localidad
 ****************************************************************************/
 BOOLEAN at(BYTE locno)
 {
 
-if(getvar(1)==locno) return(TRUE);
+if(getflag(FPLAYER)==locno) return(TRUE);
 
 return(FALSE);
 }
 
 /****************************************************************************
-	NOTAT: comprueba que no est† en una localidad.
-	  Entrada:      'locno' n£mero de localidad
-	  Salida:       TRUE si no est† en esa localidad
-			FALSE si est† en esa localidad
+	NOTAT: comprueba que no est√° en una localidad.
+	  Entrada:      'locno' n√∫mero de localidad
+	  Salida:       TRUE si no est√° en esa localidad
+			FALSE si est√° en esa localidad
 ****************************************************************************/
 BOOLEAN notat(BYTE locno)
 {
@@ -1708,81 +2154,81 @@ return(TRUE-at(locno));
 }
 
 /****************************************************************************
-	ATGT: comprueba si est† en una localidad superior a la dada.
-	  Entrada:      'locno' n£mero de localidad
-	  Salida:       TRUE si est† en una localidad superior
-			FALSE si est† en una localidad inferior o igual
+	ATGT: comprueba si est√° en una localidad superior a la dada.
+	  Entrada:      'locno' n√∫mero de localidad
+	  Salida:       TRUE si est√° en una localidad superior
+			FALSE si est√° en una localidad inferior o igual
 ****************************************************************************/
 BOOLEAN atgt(BYTE locno)
 {
 
-if(getvar(1)>locno) return(TRUE);
+if(getflag(FPLAYER)>locno) return(TRUE);
 
 return(FALSE);
 }
 
 /****************************************************************************
-	ATLT: comprueba si est† en una localidad inferior a la dada.
-	  Entrada:      'locno' n£mero de localidad
-	  Salida:       TRUE si est† en una localidad inferior
-			FALSE si est† en una localidad superior o igual
+	ATLT: comprueba si est√° en una localidad inferior a la dada.
+	  Entrada:      'locno' n√∫mero de localidad
+	  Salida:       TRUE si est√° en una localidad inferior
+			FALSE si est√° en una localidad superior o igual
 ****************************************************************************/
 BOOLEAN atlt(BYTE locno)
 {
 
-if(getvar(1)<locno) return(TRUE);
+if(getflag(FPLAYER)<locno) return(TRUE);
 
 return(FALSE);
 }
 
 /****************************************************************************
-	ADJECT1: comprueba el primer adjetivo de la sentencia l¢gica.
-	  Entrada:      'adj' n£mero de adjetivo
-	  Salida:       TRUE si el adjetivo 1 en la sentencia l¢gica (var(4))
+	ADJECT1: comprueba el primer adjetivo de la sentencia l√≥gica.
+	  Entrada:      'adj' n√∫mero de adjetivo
+	  Salida:       TRUE si el adjetivo 1 en la sentencia l√≥gica (var(4))
 			es el dado
 			FALSE si no
 ****************************************************************************/
 BOOLEAN adject1(BYTE adj)
 {
 
-if(getvar(4)==adj) return(TRUE);
+if(getflag(FADJECT)==adj) return(TRUE);
 
 return(FALSE);
 }
 
 /****************************************************************************
-	NOUN2: comprueba el segundo nombre de la sentencia l¢gica.
-	  Entrada:      'nomb' n£mero de nombre
-	  Salida:       TRUE si el nombre 2 en la sentencia l¢gica (var(5))
+	NOUN2: comprueba el segundo nombre de la sentencia l√≥gica.
+	  Entrada:      'nomb' n√∫mero de nombre
+	  Salida:       TRUE si el nombre 2 en la sentencia l√≥gica (var(5))
 			es el dado
 			FALSE si no
 ****************************************************************************/
 BOOLEAN noun2(BYTE nomb)
 {
 
-if(getvar(5)==nomb) return(TRUE);
+if(getflag(FNOUN2)==nomb) return(TRUE);
 
 return(FALSE);
 }
 
 /****************************************************************************
-	ADJECT2: comprueba el segundo adjetivo de la sentencia l¢gica.
-	  Entrada:      'adj' n£mero de adjetivo
-	  Salida:       TRUE si el adjetivo 2 en la sentencia l¢gica (var(6))
+	ADJECT2: comprueba el segundo adjetivo de la sentencia l√≥gica.
+	  Entrada:      'adj' n√∫mero de adjetivo
+	  Salida:       TRUE si el adjetivo 2 en la sentencia l√≥gica (var(6))
 			es el dado
 			FALSE si no
 ****************************************************************************/
 BOOLEAN adject2(BYTE adj)
 {
 
-if(getvar(6)==adj) return(TRUE);
+if(getflag(FADJECT2)==adj) return(TRUE);
 
 return(FALSE);
 }
 
 /****************************************************************************
 	LISTAT: lista los objetos presentes en una localidad.
-	  Entrada:      'locno' n£mero de localidad
+	  Entrada:      'locno' n√∫mero de localidad
 			bandera 7 a 1 si se imprime mensaje 'nada' cuando no
 			hay objetos que listar
 ****************************************************************************/
@@ -1793,39 +2239,44 @@ char *po;
 BYTE obl[MAX_OBJ];
 
 /* si se trata de localidad actual sustituye por su valor */
-if(locno==LOC_ACTUAL) locno=getvar(1);
+if(locno==LOC_ACTUAL) locno=getflag(FPLAYER);
 
 /* recorre toda la tabla de objetos */
 for(i=0; i<cab.num_obj; i++) {
-	/* almacena n£meros de objetos en localidad especificada */
+	/* almacena n√∫meros de objetos en localidad especificada */
 	if(loc_obj[i]==locno) {
 		obl[j]=i;
 		j++;
 	}
 }
 
-/* si no se encontr¢ ning£n objeto */
-if(!j && notzero(7)) sysmess(10);       /* ' nada.' */
+/* si no se encontr√≥ ning√∫n objeto */
+if(!j)
+{
+	clearflagbit(FFLAGS, FFOBJLISTED); /* Pone a 0 el bit 7 del flag FFLAGS, ning√∫n objeto se ha listado */
+	sysmess(53);       /* ' nada.' */
+} 
 else {
 	/* recupera objetos guardados */
+	setflagbit(FFLAGS, FFOBJLISTED);  /* Pone a 1 el bit 7 del flag FFLAGS, algun objeto se ha listado */
 	for(i=0; i<j; i++) {
 		/* puntero a texto objeto */
 		po=tab_obj+tab_desp_obj[obl[i]]+6;
 
-		/* si bandera 1 est† activada imprime en formato columna */
-		if(notzero(1)) {
-			vv_imps(po,&w[getvar(0)]);
-			vv_impc('\n',&w[getvar(0)]);
+		/* si bit 6 de FFLAGS est√° activado imprime en formato columna */
+		if(getflagbit(FFLAGS, FFLISTCOL)) {
+			vv_imps(po,&w[getflag(FDARK)]);
+			vv_impc('\n',&w[getflag(FDARK)]);
 		}
 		else {
 			/* imprime objeto */
-			vv_imps(po,&w[getvar(0)]);
+			vv_imps(po,&w[getflag(FDARK)]);
 			/* si final de la lista */
-			if(i==(BYTE)(j-1)) sysmess(13);
-			/* uni¢n entre los dos £ltimos objetos de lista */
-			else if(i==(BYTE)(j-2)) sysmess(12);
-			/* separaci¢n entre objs. */
-			else sysmess(11);
+			if(i==(BYTE)(j-1)) sysmess(48);
+			/* uni√≥n entre los dos √∫ltimos objetos de lista */
+			else if(i==(BYTE)(j-2)) sysmess(47);
+			/* separaci√≥n entre objs. */
+			else sysmess(46);
 		}
 	}
 }
@@ -1834,238 +2285,232 @@ return(TRUE);
 }
 
 /****************************************************************************
-	ISAT: comprueba si un objeto est† en una localidad.
-	  Entrada:      'nobj' n£mero de objeto
-			'locno' n£mero de localidad
-	  Salida:       TRUE si el objeto est† en la localidad
-			FALSE si no est† en la localidad
+	ISAT: comprueba si un objeto est√° en una localidad.
+	  Entrada:      'objno' n√∫mero de objeto
+			'locno' n√∫mero de localidad
+	  Salida:       TRUE si el objeto est√° en la localidad
+			FALSE si no est√° en la localidad
 ****************************************************************************/
-BOOLEAN isat(BYTE nobj, BYTE locno)
+BOOLEAN isat(BYTE objno, BYTE locno)
 {
-
-/* si se trata de localidad actual sustituye por su valor */
-if(locno==LOC_ACTUAL) locno=getvar(1);
-
-if(loc_obj[nobj]==locno) return(TRUE);
-
-return(FALSE);
+	/* si se trata de localidad actual sustituye por su valor */
+	if(locno==LOC_ACTUAL) locno=getflag(FPLAYER);
+	if(loc_obj[objno]==locno) return(TRUE);
+	return(FALSE);
 }
 
 /****************************************************************************
-	ISNOTAT: comprueba si un objeto no est† en una localidad.
-	  Entrada:      'nobj' n£mero de objeto
-			'locno' n£mero de localidad
-	  Salida:       TRUE si el objeto no est† en la localidad
-			FALSE si est† en la localidad
+	ISNOTAT: comprueba si un objeto no est√° en una localidad.
+	  Entrada:      'objno' n√∫mero de objeto
+			'locno' n√∫mero de localidad
+	  Salida:       TRUE si el objeto no est√° en la localidad
+			FALSE si est√° en la localidad
 ****************************************************************************/
-BOOLEAN isnotat(BYTE nobj, BYTE locno)
+BOOLEAN isnotat(BYTE objno, BYTE locno)
 {
-
-return(TRUE-isat(nobj,locno));
+	return(TRUE-isat(objno,locno));
 }
 
 /****************************************************************************
-	PRESENT: comprueba si un objeto est† presente (en localidad actual,
+	PRESENT: comprueba si un objeto est√° presente (en localidad actual,
 	  cogido o puesto).
-	  Entrada:      'nobj' n£mero de objeto
-	  Salida:       TRUE si el objeto est† presente
-			FALSE si no est† presente
+	  Entrada:      'objno' n√∫mero de objeto
+	  Salida:       TRUE si el objeto est√° presente
+			FALSE si no est√° presente
 ****************************************************************************/
-BOOLEAN present(BYTE nobj)
+BOOLEAN present(BYTE objno)
 {
 
-if(isat(nobj,LOC_ACTUAL) || isat(nobj,COGIDO) || isat(nobj,PUESTO))
+if(isat(noobjnobj,LOC_ACTUAL) || isat(objno,COGIDO) || isat(objno,PUESTO))
   return(TRUE);
 
 return(FALSE);
 }
 
 /****************************************************************************
-	ABSENT: comprueba si un objeto no est† presente.
-	  Entrada:      'nobj' n£mero de objeto
-	  Salida:       TRUE si el objeto no est† presente
-			FALSE si est† presente
+	ABSENT: comprueba si un objeto no est√° presente.
+	  Entrada:      'objno' n√∫mero de objeto
+	  Salida:       TRUE si el objeto no est√° presente
+			FALSE si est√° presente
 ****************************************************************************/
-BOOLEAN absent(BYTE nobj)
+BOOLEAN absent(BYTE objno)
 {
 
-return(TRUE-present(nobj));
+return(TRUE-present(objno));
 }
 
 /****************************************************************************
-	WORN: comprueba si un objeto est† puesto.
-	  Entrada:      'nobj' n£mero de objeto
-	  Salida:       TRUE si el objeto est† puesto
-			FALSE si no est† puesto
+	WORN: comprueba si un objeto est√° puesto.
+	  Entrada:      'objno' n√∫mero de objeto
+	  Salida:       TRUE si el objeto est√° puesto
+			FALSE si no est√° puesto
 ****************************************************************************/
-BOOLEAN worn(BYTE nobj)
+BOOLEAN worn(BYTE objno)
 {
 
-if(isat(nobj,PUESTO)) return(TRUE);
+if(isat(objno,PUESTO)) return(TRUE);
 
 return(FALSE);
 }
 
 /****************************************************************************
-	NOTWORN: comprueba si un objeto no est† puesto.
-	  Entrada:      'nobj' n£mero de objeto
-	  Salida:       TRUE si el objeto no est† puesto
-			FALSE si est† puesto
+	NOTWORN: comprueba si un objeto no est√° puesto.
+	  Entrada:      'objno' n√∫mero de objeto
+	  Salida:       TRUE si el objeto no est√° puesto
+			FALSE si est√° puesto
 ****************************************************************************/
-BOOLEAN notworn(BYTE nobj)
+BOOLEAN notworn(BYTE objno)
 {
 
-return(TRUE-worn(nobj));
+return(TRUE-worn(objno));
 }
 
 /****************************************************************************
-	CARRIED: comprueba si un objeto est† cogido.
-	  Entrada:      'nobj' n£mero de objeto
-	  Salida:       TRUE si el objeto est† cogido
-			FALSE si no est† cogido
+	CARRIED: comprueba si un objeto est√° cogido.
+	  Entrada:      'objno' n√∫mero de objeto
+	  Salida:       TRUE si el objeto est√° cogido
+			FALSE si no est√° cogido
 ****************************************************************************/
-BOOLEAN carried(BYTE nobj)
+BOOLEAN carried(BYTE objno)
 {
 
-if(isat(nobj,COGIDO)) return(TRUE);
+if(isat(objno,COGIDO)) return(TRUE);
 
 return(FALSE);
 }
 
 /****************************************************************************
-	NOTCARR: comprueba si un objeto no est† cogido.
-	  Entrada:      'nobj' n£mero de objeto
-	  Salida:       TRUE si el objeto no est† cogido
-			FALSE si est† cogido
+	NOTCARR: comprueba si un objeto no est√° cogido.
+	  Entrada:      'objno' n√∫mero de objeto
+	  Salida:       TRUE si el objeto no est√° cogido
+			FALSE si est√° cogido
 ****************************************************************************/
-BOOLEAN notcarr(BYTE nobj)
+BOOLEAN notcarr(BYTE objno)
 {
 
-return(TRUE-carried(nobj));
+return(TRUE-carried(objno));
 }
 
 /****************************************************************************
 	WEAR: pone un objeto que sea una prenda.
-	  Entrada:      'nobj' n£mero de objeto
+	  Entrada:      'objno' n√∫mero de objeto
 	  Salida:       TRUE si se pudo poner el objeto
 			FALSE si no se pudo poner
-	  NOTA: la variable 8 contendr† el n£mero del objeto a la salida
+	  NOTA: el flag FRFOBJ contendr√° el n√∫mero del objeto a la salida
 ****************************************************************************/
-BOOLEAN wear(BYTE nobj)
+BOOLEAN wear(BYTE objno)
 {
 char *po;
 
 /* si el objeto no existe */
-if(nobj>=cab.num_obj) {
-	sysmess(5);                     /* 'No tienes eso.' */
+if(objno>=cab.num_obj) {
+	sysmess(28);                     /* 'No tengo eso.' */
 	return(FALSE);
 }
 
-/* coloca el n£mero del objeto en la variable 8 */
-setvar(8,nobj);
+/* coloca el n√∫mero del objeto en el flag FRFOBJ */
+setflag(FRFOBJ,objno);
 
 /* puntero a banderas1 de objeto */
-po=tab_obj+tab_desp_obj[nobj]+3;
+po=tab_obj+tab_desp_obj[objno]+3;
 
-/* si el objeto est† puesto */
-if(worn(nobj)) {
-	sysmess(16);                    /* 'Ya llevas puesto _.' */
+/* si el objeto est√° puesto */
+if(worn(objno)) {
+	sysmess(29);                    /* 'Ya llevo puesto _.' */
 	return(FALSE);                  /* debe hacer un DONE */
 }
 
-/* si el objeto no est† aqu° */
-if(absent(nobj)) {
-	sysmess(1);                     /* 'Aqu° no est† eso.' */
+/* si el objeto no est√° aqu√≠ */
+if(absent(objno)) {
+	sysmess(26);                     /* 'Aqu√≠ no est√° eso.' */
 	return(FALSE);                  /* debe hacer un DONE */
 }
 
-/* si el objeto no est† cogido */
-if(notcarr(nobj)) {
-	sysmess(5);                     /* 'No tienes eso.' */
+/* si el objeto no est√° cogido */
+if(notcarr(objno)) {
+	sysmess(28);                     /* 'No tienes eso.' */
 	return(FALSE);
 }
 
 /* si no es una prenda */
 if(!(*po & 0x01)) {
-	sysmess(17);                    /* 'No puedes ponerte _.' */
+	sysmess(40);                    /* 'No puedes ponerte _.' */
 	return(FALSE);                  /* debe hacer un DONE */
 }
 
 /* se pone la prenda */
-place(nobj,PUESTO);
-sysmess(18);                            /* 'Te pones _.' */
+place(objno,PUESTO);
+sysmess(37);                            /* 'Te pones _.' */
 
 return(TRUE);
 }
 
 /****************************************************************************
 	REMOVE: quita un objeto que sea una prenda.
-	  Entrada:      'nobj' n£mero de objeto
+	  Entrada:      'objno' n√∫mero de objeto
 	  Salida:       TRUE si se pudo quitar el objeto
 			FALSE si no se pudo quitar
-	  NOTA: la variable 8 contendr† el n£mero del objeto a la salida
+	  NOTA: el flag 8 contendr√° el n√∫mero del objeto a la salida
 ****************************************************************************/
-BOOLEAN remove1(BYTE nobj)
+BOOLEAN remove1(BYTE objno)
 {
 
 /* si el objeto no existe */
-if(nobj>=cab.num_obj) {
-	sysmess(19);                    /* 'No llevas puesto eso.' */
+if(objno>=cab.num_obj) {
+	sysmess(41);                    /* 'No llevas puesto eso.' */
 	return(FALSE);
 }
 
-/* coloca el n£mero del objeto en la variable 8 */
-setvar(8,nobj);
+/* coloca el n√∫mero del objeto en el flag 8 */
+setflag(FRFOBJ,objno);
 
 /* si no lo lleva puesto */
-if(notworn(nobj)) {
-	sysmess(19);                    /* 'No llevas puesto eso.' */
+if(notworn(objno)) {
+	sysmess(41);                    /* 'No llevas puesto eso.' */
 	return(FALSE);                  /* debe hacer un DONE */
 }
 
 /* pasa el objeto a cogido */
-place(nobj,COGIDO);
-sysmess(20);                            /* 'Te quitas _.' */
+place(objno,COGIDO);
+sysmess(38);                            /* 'Te quitas _.' */
 
 return(TRUE);
 }
 
 /****************************************************************************
 	CREATE: pasa un objeto no creado a la localidad actual.
-	  Entrada:      'nobj' n£mero de objeto
+	  Entrada:      'objno' n√∫mero de objeto
 ****************************************************************************/
-BOOLEAN create(BYTE nobj)
+BOOLEAN create(BYTE objno)
 {
-
-if(isat(nobj,NO_CREADO)) place(nobj,LOC_ACTUAL);
-
-return(TRUE);
+	place(objno,getflag(FPLAYER));
+	return(TRUE);
 }
 
 /****************************************************************************
 	DESTROY: pasa un objeto a no creado.
-	  Entrada:      'nobj' n£mero de objeto
+	  Entrada:      'nobj' n√∫mero de objeto
 ****************************************************************************/
-BOOLEAN destroy(BYTE nobj)
+BOOLEAN destroy(BYTE objno)
 {
 
-place(nobj,NO_CREADO);
+place(objno,NO_CREADO);
 
 return(TRUE);
 }
 
 /****************************************************************************
 	SWAP: intercambia dos objetos.
-	  Entrada:      'nobj1' n£mero de objeto 1
-			'nobj2' n£mero de objeto 2
+	  Entrada:      'objno1' n√∫mero de objeto 1
+			'objno2' n√∫mero de objeto 2
 ****************************************************************************/
-BOOLEAN swap(BYTE nobj1,BYTE nobj2)
+BOOLEAN swap(BYTE objno1,BYTE objno2)
 {
 BYTE locobj2;
 
-locobj2=loc_obj[nobj2];         /* guarda localidad de 2? objeto */
-place(nobj2,loc_obj[nobj1]);    /* pasa 2? a localidad del 1? */
-place(nobj1,locobj2);           /* pasa 1? a localidad del 2? */
+locobj2=loc_obj[objno2];         /* guarda localidad de 2 objeto */
+place(objno2,loc_obj[objno1]);    /* pasa 2 a localidad del 1? */
+place(objno1,locobj2);           /* pasa 1 a localidad del 2? */
 
 return(TRUE);
 }
@@ -2092,51 +2537,48 @@ return(FALSE);
 }
 
 /****************************************************************************
-	WHATO: devuelve el n£mero de objeto que se corresponde con el nombre1,
-	  adjetivo1 de la sentencia l¢gica actual.
+	WHATO: devuelve el n√∫mero de objeto que se corresponde con el nombre1,
+	  adjetivo1 de la sentencia l√≥gica actual.
 	  Entrada:      var(3) nombre
 					var(4) adjetivo
-	  Salida:       var(8) n£mero de objeto
+	  Salida:       var(8) n√∫mero de objeto
 ****************************************************************************/
 BOOLEAN whato(void)
 {
 BYTE i;
-char *po;
+WORD po;
 
-/* inicializa a n£mero de objeto no v†lido */
-#ifdef DAAD
-setvar(8,MAX_VAL);
-#else
-setvar(8,255);
-#endif
+/* inicializa a n√∫mero de objeto no v√°lido */
+setflag(FRFOBJ,MAX_VAL);
 
 for(i=0; i<cab.num_obj; i++) {
 	/* puntero a nombre-adjetivo objeto */
-	po=tab_obj+tab_desp_obj[i];
+	po = cab.obj_names_pos+ i * 2;
 
-	/* si encuentra el objeto, coloca su n£mero en var(8) */
-	if((getvar(3)==(BYTE)*po) && ((getvar(4)==NO_PAL) ||
-	  (getvar(4)==(BYTE)*(po+1)))) {
-		setvar(8,i);
+	/* si encuentra el objeto, coloca su n√∫mero en var(8) */
+	if((getflag(FNOUN)==getDDBByte(po)) && ((getflag(FADJECT)==NO_PAL) ||
+	   (getflag(FNOUN)==getDDBByte(po)) && ((getflag(FADJECT)==getDDBByte(po+1)))
+	   {
+		setco(i); /* Asignar todos los flags de objeto referenciado */
 		break;
-	}
+	  }
 }
 
 return(TRUE);
 }
 
 /****************************************************************************
-	MOVE: actualiza el contenido de una variable de acuerdo a su
-	  contenido actual, a la sentencia l¢gica y a la tabla de conexiones,
-	  para que contenga el n£mero de localidad con la que conecta una
-	  dada por medio de la palabra de movimiento de la sentencia l¢gica.
-	  Entrada:      'nv' n£mero de variable (cuyo contenido es el n£mero
-			de una localidad v†lida)
-			var(2) y var(3) sentencia l¢gica
-	  Salida:       TRUE si hay conexi¢n y 'nv' modificada para que
-			contenga un n£mero de localidad que conecta con la
+	MOVE: actualiza el contenido de un flag de acuerdo a su
+	  contenido actual, a la sentencia l√≥gica y a la tabla de conexiones,
+	  para que contenga el n√∫mero de localidad con la que conecta una
+	  dada por medio de la palabra de movimiento de la sentencia l√≥gica.
+	  Entrada:      'nv' n√∫mero de variable (cuyo contenido es el n√∫mero
+			de una localidad v√°lida)
+			var(2) y var(3) sentencia l√≥gica
+	  Salida:       TRUE si hay conexi√≥n y 'nv' modificada para que
+			contenga un n√∫mero de localidad que conecta con la
 			dada por medio de la tabla de conexiones
-			FALSE si no hay conexi¢n en esa direcci¢n y 'nv' sin
+			FALSE si no hay conexi√≥n en esa direcci√≥n y 'nv' sin
 			modificar
 ****************************************************************************/
 BOOLEAN move(BYTE nv)
@@ -2144,82 +2586,78 @@ BOOLEAN move(BYTE nv)
 BYTE *pc;
 
 /* puntero a conexiones de localidad var(nv) */
-pc=tab_conx+tab_desp_conx[getvar(nv)];
+pc=tab_conx+tab_desp_conx[getflag(nv)];
 
 /* mientras haya conexiones */
 while(*pc) {
-	if((getvar(2)==*pc && getvar(3)==NO_PAL) || (getvar(2)==NO_PAL && getvar(3)==*pc)
-	  || (getvar(2)==*pc && getvar(3)==*pc)) {
-		/* guarda n£mero localidad hacia la que conecta y sale */
-		setvar(nv,*(pc+1));
+	if((getflag(FVERB)==*pc && getflag(FNOUN)==NO_PAL) || (getflag(FVERB)==NO_PAL && getflag(FNOUN)==*pc)
+	  || (getflag(FVERB)==*pc && getflag(FNOUN)==*pc)) {
+		/* guarda n√∫mero localidad hacia la que conecta y sale */
+		setflag(nv,*(pc+1));
 		return(TRUE);
 	}
-	/* siguiente conexi¢n */
+	/* siguiente conexi√≥n */
 	pc+=2;
 }
 
-/* si no encontr¢ conexi¢n */
+/* si no encontr√≥ conexi√≥n */
 return(FALSE);
 }
 
+/* FALTA: ESTO NO ES DAAD */
 /****************************************************************************
-	ISMOV: comprueba si la sentencia l¢gica es de movimiento
+	ISMOV: comprueba si la sentencia l√≥gica es de movimiento
 	  (movim. - NO_PAL, NO_PAL - movim. o movim. - movim.).
 	  Entrada:      var(2) y var(3) con nombre-verbo
-	  Salida:       TRUE si es sentencia l¢gica de movimiento
+	  Salida:       TRUE si es sentencia l√≥gica de movimiento
 			FALSE si no lo es
 ****************************************************************************/
 BOOLEAN ismov(void)
 {
 
-if((getvar(2)<cab.v_mov && getvar(3)==NO_PAL) ||
-  (getvar(2)==NO_PAL && getvar(3)<cab.v_mov) ||
-  (getvar(2)<cab.v_mov && getvar(3)<cab.v_mov)) return(TRUE);
+if((getflag(FVERB)<cab.v_mov && getflag(FNOUN)==NO_PAL) ||
+  (getflag(FVERB)==NO_PAL && getflag(FNOUN)<cab.v_mov) ||
+  (getflag(FVERB)<cab.v_mov && getflag(FNOUN)<cab.v_mov)) return(TRUE);
 
 return(FALSE);
 }
 
 /****************************************************************************
 	GOTO: va a una localidad especificada.
-	  Entrada:      'locno' n£mero de localidad
-	  Salida:       var(1) conteniendo el n£mero de nueva localidad
-			(si 'locno' es localidad no v†lida, el contenido de
+	  Entrada:      'locno' n√∫mero de localidad
+	  Salida:       var(1) conteniendo el n√∫mero de nueva localidad
+			(si 'locno' es localidad no v√°lida, el contenido de
 			var(1) no se modifica)
 ****************************************************************************/
 BOOLEAN goto1(BYTE locno)
 {
-
-if(locno<cab.num_loc) setvar(1,locno);
-
-return(TRUE);
+	if(locno<cab.num_loc) setflag(FPLAYER,locno);
+	return(TRUE);
 }
 
 /****************************************************************************
-	PRINT: imprime el contenido de una variable en la posici¢n actual.
-	  Entrada:      'nv' n£mero de variable
+	PRINT: imprime el contenido de un flag en la posici√≥n actual.
+	  Entrada:      'flagno' n√∫mero de flag
 ****************************************************************************/
-BOOLEAN print(BYTE nv)
+BOOLEAN print(BYTE flagno)
 {
-
-vv_impn((unsigned)getvar(nv),&w[getvar(0)]);
-
-return(TRUE);
+	vv_impn((unsigned)getflag(nflagnof),&w[getflag(FDARK)]);
+	return(TRUE);
 }
 
 /****************************************************************************
-	DPRINT: imprime el contenido de dos variables consecutivas como un
-	  n£mero de 16 bits en la posici¢n actual.
-	  Entrada:      'nv' n£mero de la primera variable
-	  NOTA: si nv=255 el resultado ser† impredecible
+	DPRINT: imprime el contenido de dos flags consecutivos como un
+	  n√∫mero de 16 bits en la posici√≥n actual.
+	  Entrada:      'flagno' n√∫mero de la primera variable
+	  Nota: si el flag flagno es el √∫ltimo, el resultado ser√° 0
 ****************************************************************************/
-BOOLEAN dprint(BYTE nv)
+BOOLEAN dprint(BYTE flagno)
 {
-unsigned num;
+	unsigned num;
 
-num=(getvar(nv)*256)+getvar(nv+1);
-vv_impn(num,&w[getvar(0)]);
-
-return(TRUE);
+	if (flagno==FLAGS - 1) num = 0; else num=(getflag(flagno+1)*256)+getflag(flagno);
+	vv_impn(num,&w[getflag(FDARK)]);
+	return(TRUE);
 }
 
 /****************************************************************************
@@ -2227,10 +2665,8 @@ return(TRUE);
 ****************************************************************************/
 BOOLEAN cls(void)
 {
-
-g_borra_pantalla();
-
-return(TRUE);
+	g_borra_pantalla();
+	return(TRUE);
 }
 
 /****************************************************************************
@@ -2239,57 +2675,56 @@ return(TRUE);
 BOOLEAN anykey(void)
 {
 
-sysmess(22);                    /* 'Pulsa una tecla.' */
+sysmess(16);                    /* 'Pulsa una tecla.' */
 vv_lee_tecla();
 
 return(TRUE);
 }
 
 /****************************************************************************
-	PAUSE: realiza una pausa de una duraci¢n determinada o hasta que se
+	PAUSE: realiza una pausa de una duraci√≥n determinada o hasta que se
 	  pulse una tecla.
-	  Entrada:      'pau' valor de la pausa en dÇcimas de segundo
+	  Entrada:      'duration' valor de la pausa en d√©cimas de segundo
 ****************************************************************************/
-BOOLEAN pause(BYTE pau)
+BOOLEAN pause(BYTE duration)
 {
-
-/* hace la pausa */
-pausa(pau);
-
-/* saca tecla del buffer */
-if(bioskey(1)) bioskey(0);
-
-return(TRUE);
+	/* hace la pausa */
+	pausa(duration);
+	/* saca tecla del buffer */
+	if(bioskey(1)) bioskey(0);
+	return(TRUE);
 }
 
 /****************************************************************************
-	LISTOBJ: lista los objetos de la localidad actual.
-	  Entrada:      bandera 7 a 1 si se imprime mensaje 'TambiÇn puede
-			ver: nada' cuando no hay objetos que listar
+	LISTOBJ: lista los objetos de la localidad actual. Si no hay no se pinta
+	nada.
 ****************************************************************************/
 BOOLEAN listobj(void)
 {
-BYTE i, j=0;
-BYTE obl[MAX_OBJ];
+	BYTE i, j=0;
+	BYTE obl[MAX_OBJ];
 
-/* recorre toda la tabla de objetos */
-for(i=0; i<cab.num_obj; i++) {
-	/* almacena n£meros de objetos en localidad actual */
-	if(loc_obj[i]==getvar(1)) {
-		obl[j]=i;
-		j++;
+	/* recorre toda la tabla de objetos */
+	for(i=0; i<cab.num_obj; i++) {
+		/* almacena n√∫meros de objetos en localidad actual */
+		if(loc_obj[i]==getflag(FPLAYER)) 
+		{
+			obl[j]=i;
+			j++;
+		}
 	}
+
+	/* si no est√° oscuro o hay luz lista objetos */
+	if(j)
+	{
+		sysmess(1);         /* 'Tambi√©n puedes ver: ' */
+		listat(getflag(FPLAYER));
+	}
+
+		return(TRUE);
 }
 
-/* si no est† oscuro o hay luz lista objetos */
-if(zero(0) || light()) {
-	if(j || notzero(7)) sysmess(9);         /* 'TambiÇn puedes ver: ' */
-	listat(getvar(1));
-}
-
-return(TRUE);
-}
-
+/* FALTA: ni este ni el de abajo son DAAD */
 /****************************************************************************
 	FIRSTO: coloca el puntero NEXTO al principio de la tabla de objetos.
 ****************************************************************************/
@@ -2298,50 +2733,50 @@ BOOLEAN firsto(void)
 
 /* coloca puntero al inicio de la tabla - 1 */
 ptr_nexto=-1;
-/* indica que est† activo bucle DOALL */
+/* indica que est√° activo bucle DOALL */
 doall=TRUE;
 
 return(TRUE);
 }
 
 /****************************************************************************
-	NEXTO: mueve el puntero NEXTO al siguiente objeto que estÇ en la
+	NEXTO: mueve el puntero NEXTO al siguiente objeto que est√© en la
 	  localidad especificada.
-	  Entrada:      'locno' n£mero de localidad
+	  Entrada:      'locno' n√∫mero de localidad
 	  Salida:       variables 3 y 4 con el nombre y adjetivo del
 			siguiente objeto encontrado (si el objeto encontrado
-			es el £ltimo pone 'doall' a FALSE)
+			es el √∫ltimo pone 'doall' a FALSE)
 ****************************************************************************/
 BOOLEAN nexto(BYTE locno)
 {
 char *po;
 int i;
 
-/* si no est† en bucle DOALL sale */
+/* si no est√° en bucle DOALL sale */
 if(doall==FALSE) return(TRUE);
 
 /* si se refiere a la localidad actual sustituye por su valor */
-if(locno==LOC_ACTUAL) locno=getvar(1);
+if(locno==LOC_ACTUAL) locno=getflag(FPLAYER);
 
 while(1) {
 	ptr_nexto++;
-	/* si lleg¢ al final cancela bucle DOALL */
+	/* si lleg√≥ al final cancela bucle DOALL */
 	if(ptr_nexto>=(int)cab.num_obj) {
 		doall=FALSE;
 		return(TRUE);
 	}
-	/* si objeto est† en localidad */
+	/* si objeto est√° en localidad */
 	if(loc_obj[ptr_nexto]==locno) {
 		/* puntero a objeto */
 		po=tab_obj+tab_desp_obj[ptr_nexto];
 		/* coge nombre y adjetivo de objeto */
-		setvar(3,(BYTE)*po);
-		setvar(4,(BYTE)*(po+1));
-		/* mira si es el £timo objeto en la localidad indicada */
+		setflag(FNOUN,(BYTE)*po);
+		setflag(FADJECT,(BYTE)*(po+1));
+		/* mira si es el √∫timo objeto en la localidad indicada */
 		for(i=ptr_nexto+1; i<(int)cab.num_obj; i++) {
 			if(loc_obj[i]==locno) break;
 		}
-		/* si es £ltimo objeto desactiva bucle DOALL */
+		/* si es √∫ltimo objeto desactiva bucle DOALL */
 		if(i>=(int)cab.num_obj) doall=FALSE;
 		return(TRUE);
 	}
@@ -2351,124 +2786,94 @@ while(1) {
 
 /****************************************************************************
 	SYNONYM: coloca el verbo-nombre dado en las variables 2 y 3,
-	  si alguno es NO_PAL no realiza la sustituci¢n.
+	  si alguno es NO_PAL no realiza la sustituci√≥n.
 ****************************************************************************/
 BOOLEAN synonym(BYTE verb, BYTE nomb)
 {
-
-if(verb!=NO_PAL) setvar(2,verb);
-if(nomb!=NO_PAL) setvar(3,nomb);
-
-return(TRUE);
+	if(verb!=NO_PAL) setflag(FVERB,verb);
+	if(nomb!=NO_PAL) setflag(FNOUN,nomb);
+	return(TRUE);
 }
 
 /****************************************************************************
-	HASAT: comprueba si el objeto actual (cuyo n£mero est† en la variable
+	HASAT: comprueba si el objeto actual (cuyo n√∫mero est√° en el flag
 	  del sistema 8) tiene activada una bandera de usuario.
-	  Entrada:      'val' n£mero de bandera de usuario a comprobar
+	  Entrada:      'val' n√∫mero de bandera de usuario a comprobar
 			(0 a 17), 16 comprueba si es PRENDA y 17 si FUENTE
 			DE LUZ
-	  Salida:       TRUE si la bandera de usuario est† a 1
-			FALSE si est† a 0
+	  Salida:       TRUE si la bandera de usuario est√° a 1
+			FALSE si est√° a 0
 ****************************************************************************/
 BOOLEAN hasat(BYTE val)
 {
-char *po;
-unsigned flags2, masc=0x8000;
 
-/* puntero a banderas2 de objeto */
-po=tab_obj+tab_desp_obj[getvar(8)]+4;
+BYTE objno = getflag(FRFOBJ);
 
-/* comprobar PRENDA o FUENTE LUZ */
-if((val==16) || (val==17)) {
-	/* puntero a banderas1 de objeto */
-	po--;
-	/* comprueba PRENDA */
-	if((val==16) && (*po & 0x01)) return(TRUE);
-	/* comprueba LUZ */
-	if((val==17) && (*po & 0x02)) return(TRUE);
-	return(FALSE);
+if (val == 31)  /* CONTAINER */
+{
+	if iscontainer(objno) return(TRUE); else return(FALSE);
 }
 
-/* coge las banderas de usuario */
-flags2=((*po)*256)+(*(po+1));
+if (val == 23) /* WEARABLE */
+{
+	if iswearable(objno) return(TRUE); else return(FALSE);
+}
 
-/* desplaza m†scara */
-masc>>=val;
+if (val == 55)  /* LISTED */
+{
+	if (getflagbit(FFLAGS, FFOBJLISTED)==TRUE) return(TRUE); else return(FALSE);
+}
 
-/* si es 1 el bit correspondiente */
-if(flags2 & masc) return(TRUE);
+if (val == 87 )  /* TIMEOUT */
+{
+	if (getflagbit(FTIMEOUTFLG, FTTIMEOUT)==TRUE) return(TRUE); else return(FALSE);
+}
 
-return(FALSE);
+if (val ==247) return(TRUE);   else return(FALSE); /* GRAPHICS */
+
+if (val ==240) return(TRUE);  else return(FALSE);  /* MOUSE */
+
+if (val>15) return (FALSE);
+
+WORD objflags = getDDBWord(obj_att_pos + objno * 2);
+
+if (objflags & (1<<val)) return(TRUE);  else return(FALSE); /* real user attrs */
+
 }
 
 /****************************************************************************
-	HASNAT: comprueba si el objeto actual (cuyo n£mero est† en la
+	HASNAT: comprueba si el objeto actual (cuyo n√∫mero est√° en la
 	  variable del sistema 8) no tiene activada una bandera de usuario.
-	  Entrada:      'val' n£mero de bandera de usuario a comprobar
+	  Entrada:      'val' n√∫mero de bandera de usuario a comprobar
 			(0 a 17), 16 comprueba si es PRENDA y 17 si FUENTE
 			DE LUZ
-	  Salida:       TRUE si la bandera de usuario est† a 0
-			FALSE si est† a 1
+	  Salida:       TRUE si la bandera de usuario est√° a 0
+			FALSE si est√° a 1
 ****************************************************************************/
 BOOLEAN hasnat(BYTE val)
 {
-
-return(TRUE-hasat(val));
+	return(TRUE-hasat(val));
 }
 
 /****************************************************************************
-	LIGHT: comprueba si hay presente una fuente de luz.
-	  Salida:       TRUE si hay presente una fuente de luz
-			FALSE si no
-****************************************************************************/
-BOOLEAN light(void)
-{
-BYTE i;
-char *po;
-
-/* recorre tabla de objetos */
-for(i=0; i<cab.num_obj; i++) {
-	/* puntero a banderas1 de objeto */
-	po=tab_obj+tab_desp_obj[i]+3;
-	/* si es fuente de luz y adem†s est† presente, sale con TRUE */
-	if(*po & 0x02) if(present(i)) return(TRUE);
-}
-
-/* si no hay presente ninguna fuente de luz */
-return(FALSE);
-}
-
-/****************************************************************************
-	NOLIGHT: comprueba si no hay presente ninguna fuente de luz.
-	  Salida:       TRUE si no hay presente ninguna fuente de luz
-			FALSE si hay presente al menos una fuente de luz
-****************************************************************************/
-BOOLEAN nolight(void)
-{
-
-return(TRUE-light());
-}
-
-/****************************************************************************
-	RANDOM1: genera n£meros aleatorios.
-	  Entrada:      'varno' n£mero de variable que contendr† el n£mero
+	RANDOM1: genera n√∫meros aleatorios.
+	  Entrada:      'varno' n√∫mero de variable que contendr√° el n√∫mero
 			aleatorio
-			'rnd' l°mite de n£mero aleatorio
-	  Salida:       'varno' conteniendo un n£mero aleatorio entre 0 y
+			'rnd' l√≠mite de n√∫mero aleatorio
+	  Salida:       'varno' conteniendo un n√∫mero aleatorio entre 0 y
 			'rnd'-1
 ****************************************************************************/
 BOOLEAN random1(BYTE varno, BYTE rnd)
 {
 
-setvar(varno,(BYTE)(random(rnd)));
+setflag(varno,(BYTE)(random(rnd)));
 
 return(TRUE);
 }
 
 /****************************************************************************
-	SEED: coloca el punto de inicio del generador de n£meros aleatorios.
-	  Entrada:      'seed' punto de inicio dentro de la serie de n£meros
+	SEED: coloca el punto de inicio del generador de n√∫meros aleatorios.
+	  Entrada:      'seed' punto de inicio dentro de la serie de n√∫meros
 			aleatorios. Si es 0 inicializa la serie con un valor
 			aleatorio.
 ****************************************************************************/
@@ -2482,27 +2887,25 @@ return(TRUE);
 }
 
 /****************************************************************************
-	PUTO: coloca el objeto actual cuyo n£mero est† en la variable 8 en
+	PUTO: coloca el objeto actual cuyo n√∫mero est√° en el flag 8 en
 	  una localidad.
-	  Entrada:      'nloc' n£mero de localidad
+	  Entrada:      'nloc' n√∫mero de localidad
 ****************************************************************************/
 BOOLEAN puto(BYTE nloc)
 {
-
-place(getvar(8),nloc);
-
-return(TRUE);
+	place(getflag(FRFOBJ),nloc);
+	return(TRUE);
 }
 
 /****************************************************************************
-	INKEY: coloca en las variables 9 y 10 el par de c¢digos ASCII IBM
-	  de la £ltima tecla pulsada (si se puls¢ alguna).
-	  Salida:       TRUE si se puls¢ una tecla y adem†s...
-			 -variable 9 conteniendo 1er c¢digo ASCII IBM (c¢digo
-			  ASCII del car†cter, si es distinto de 0)
-			 -variable 10 conteniendo 2o c¢digo ASCII IBM (c¢digo
+	INKEY: coloca en las variables 9 y 10 el par de c√≥digos ASCII IBM
+	  de la √∫ltima tecla pulsada (si se puls√≥ alguna).
+	  Salida:       TRUE si se puls√≥ una tecla y adem√°s...
+			 -variable 9 conteniendo 1er c√≥digo ASCII IBM (c√≥digo
+			  ASCII del car√°cter, si es distinto de 0)
+			 -variable 10 conteniendo 2o c√≥digo ASCII IBM (c√≥digo
 			  de scan de la tecla pulsada)
-			FALSE si no se puls¢ ninguna tecla (deja sin
+			FALSE si no se puls√≥ ninguna tecla (deja sin
 			modificar las variables 9 y 10)
 ****************************************************************************/
 BOOLEAN inkey(void)
@@ -2511,12 +2914,12 @@ unsigned tecla;
 
 /* si hay tecla esperando */
 if(bioskey(1)) {
-	/* recoge c¢digos tecla pulsada */
+	/* recoge c√≥digos tecla pulsada */
 	tecla=bioskey(0);
-	/* c¢digo ASCII, byte bajo */
-	setvar(9,(BYTE)(tecla & 0x00ff));
-	/* c¢digo scan, byte alto */
-	setvar(10,(BYTE)((tecla >> 8) & 0x00ff));
+	/* c√≥digo ASCII, byte bajo */
+	setflag(FKEY1,(BYTE)(tecla & 0x00ff));
+	/* c√≥digo scan, byte alto */
+	setflag(FKEY2,(BYTE)((tecla >> 8) & 0x00ff));
 	return(TRUE);
 }
 
@@ -2524,201 +2927,148 @@ return(FALSE);
 }
 
 /****************************************************************************
-	COPYOV: copia el n£mero de localidad en la que est† el objeto
-	  referenciado en una variable dada.
-	  Entrada:      'nobj' n£mero de objeto
-			'varno' n£mero de variable
+	COPYOF: copia el n√∫mero de localidad en la que est√° el objeto
+	  		referenciado en un flag dado.
+	  Entrada:      'nobj' n√∫mero de objeto
+					'flagno' n√∫mero de flag
 ****************************************************************************/
-BOOLEAN copyov(BYTE nobj, BYTE varno)
+BOOLEAN copyof(BYTE objno, BYTE flagno)
 {
 
-setvar(varno,loc_obj[nobj]);
+setflag(flagno,loc_obj[objno]);
 
 return(TRUE);
 }
 
 /****************************************************************************
 	CHANCE: comprueba una probabilidad en tanto por ciento.
-	  Entrada:      'rnd' probabilidad de 0 a 100
-	  Salida:       TRUE si el n£mero aleatorio generado internamente es
+	  Entrada:      'val' probabilidad de 0 a 100
+	  Salida:       TRUE si el n√∫mero aleatorio generado internamente es
 			menor o igual que rnd
 			FALSE si es mayor que rnd
 ****************************************************************************/
-BOOLEAN chance(BYTE rnd)
+BOOLEAN chance(BYTE val)
 {
 BYTE chc;
 
-/* n£mero aleatorio entre 0 y 100 */
+/* n√∫mero aleatorio entre 0 y 100 */
 chc=(BYTE)random(101);
 
-if(chc>rnd) return(FALSE);
+if(chc>val) return(FALSE);
 
 return(TRUE);
 }
 
 /****************************************************************************
 	RAMSAVE: graba en uno de los bancos de ram disponibles el estado
-	  actual (variables, banderas y posici¢n actual de objetos).
-	  Entrada:      'banco' n£mero de banco de memoria a usar (0 o 1)
+	  actual (variables, banderas y posici√≥n actual de objetos).
 ****************************************************************************/
-BOOLEAN ramsave(BYTE banco)
+BOOLEAN ramsave()
 {
 unsigned i;
+BYTE banco = 0;
 
 /* marca banco usado */
 ram[banco].usado=TRUE;
 
-/* guarda variables */
-for(i=0; i<VARS; i++) ram[banco].bram[i]=getvar(i);
-#ifndef DAAD
-/* guarda banderas */
-for(i=0; i<BANDS; i++) ram[banco].bram[VARS+i]=flag[i];
-#endif
-/* guarda localidades actuales de los objetos */
-for(i=0; i<MAX_OBJ; i++) ram[banco].bram[VARS+BANDS+i]=loc_obj[i];
+/* guarda flags */
+for(i=0; i<FLAGS; i++) ram[banco].bram[i]=getflag(i);
 
-#ifndef DAAD
-/* G3.25: guardamos la tabla de objetos para consevar las banderas de usuario */
-if(ram[banco].tab_obj!=NULL) {
-	free(ram[banco].tab_obj);
-	ram[banco].tab_obj=NULL;
-}
-if((ram[banco].tab_obj=(char *)malloc((size_t)cab.bytes_obj))==NULL) {
-	sysmess(28);
-	return(FALSE);
-}
-for(i=0; i<cab.bytes_obj; i++) ram[banco].tab_obj[i]=tab_obj[i];
-#endif
+/* guarda localidades actuales de los objetos */
+for(i=0; i<MAX_OBJ; i++) ram[banco].bram[FLAGS+BANDS+i]=loc_obj[i];
 
 return(TRUE);
 }
 
 /****************************************************************************
-	RAMLOAD: recupera una posici¢n guardada con RAMSAVE.
-	  Entrada:      'banco' n£mero de banco de memoria a usar (0 o 1)
-			'vtop'  m†ximo n£mero de variable a recuperar (se
-			recuperar† desde la 0 hasta 'vtop' inclusive)
-			'ftop' m†ximo n£mero de bandera a recuperar (se
-			recuperar† desde la 0 hasta ftop inclusive)
+	RAMLOAD: recupera una posici√≥n guardada con RAMSAVE.
+	  Entrada:      'ftop'  m√°ximo n√∫mero de flag a recuperar (se
+					recuperar√° desde la 0 hasta 'ftop' inclusive)
 	  Salida:       TRUE si se pudo ejecutar RAMLOAD
-			FALSE si el banco indicado no fuÇ usado antes por
-			RAMSAVE
+					FALSE si el banco indicado no fu√© usado antes por RAMSAVE
 ****************************************************************************/
-BOOLEAN ramload(BYTE banco, BYTE vtop, BYTE ftop)
+BOOLEAN ramload( BYTE ftop)
 {
-int nbyte, nbit;
 unsigned i;
-BYTE mascara;
+BYTE banco = 0; /* FALTA: LIMPIAR PORQUE SINTACT TENIA DOS BANCOS DE RAMSAVE PERO NO LOS USAMOS */
 
 /* mira si el banco ha sido usado */
 if(!ram[banco].usado) return(FALSE);
 
-/* recupera variables */
-for(i=0; i<=(unsigned)vtop; i++) setvar(i,ram[banco].bram[i]);
-#ifndef DAAD
-/* recupera banderas */
-for(i=0; i<=(unsigned)ftop; i++) {
-	nbyte=i/8;
-	nbit=i%8;
-	mascara=0x80;
-	mascara>>=nbit;
-	if(ram[banco].bram[VARS+nbyte] & mascara) set((BYTE)i);
-	else clear((BYTE)i);
-}
-#endif
+/* recupera flags */
+for(i=0; i<=(unsigned)ftop; i++) setflag(i,ram[banco].bram[i]);
+
 /* recupera localidades actuales de los objetos */
-for(i=0; i<MAX_OBJ; i++) loc_obj[i]=ram[banco].bram[VARS+BANDS+i];
+for(i=0; i<MAX_OBJ; i++) loc_obj[i]=ram[banco].bram[FLAGS+BANDS+i];
 
-#ifndef DAAD
-/* G3.25: recupera la tabla de objetos */
-if(ram[banco].tab_obj==NULL) {
-	sysmess(28);
-	return(FALSE);
-}
-else {
-	for(i=0; i<cab.bytes_obj; i++) tab_obj[i]=ram[banco].tab_obj[i];
-}
-
-/* G3.30: tabla de mensajes activa */
-tabla_msg=getvar(17);
-#endif
 
 return(TRUE);
 }
 
 /****************************************************************************
-	ABILITY: designa el n£mero de objetos m†ximo que puede ser llevado.
-	  Entrada:      'nobjs' n£mero de objetos m†ximo (0 ilimitados)
+	ABILITY: designa el n√∫mero de objetos m√°ximo que puede ser llevado.
+	  Entrada:      'max_objs' n√∫mero de objetos m√°ximo (0 ilimitados)
+	  				'max_weight' m√°ximo peso llevable
 ****************************************************************************/
-BOOLEAN ability(BYTE nobjs)
+BOOLEAN ability(BYTE max_objs, BYTE max_weight)
 {
-
-/* coloca m†ximo n£mero de objetos en variable 7 */
-let(7,nobjs);
-
-return(TRUE);
+	setflag(FABILITY,max_objs);
+	setflag(FABILITY2, max_weight);
+	return(TRUE);
 }
 
 /****************************************************************************
-	AUTOG: coge el objeto cuyo nombre-adjetivo est†n en las variables
-	  3 y 4 respectivamente (es como WHATO seguido de GET [8]).
+	AUTOG: coge el objeto cuyo nombre-adjetivo est√°n en las variables
+	  34 y 35 respectivamente (es como WHATO seguido de GET [8]).
 	  Salida:       TRUE si se pudo coger el objeto
-			FALSE si no se pudo coger
+					FALSE si no se pudo coger
 ****************************************************************************/
 BOOLEAN autog(void)
 {
-
-whato();
-
-return(get(getvar(8)));
+	whato();
+	return(get(getflag(FRFOBJ)));
 }
 
 /****************************************************************************
-	AUTOD: deja el objeto cuyo nombre-adjetivo est†n en las variables
-	  3 y 4 respectivamente (es como WHATO seguido de DROP [8]).
+	AUTOD: deja el objeto cuyo nombre-adjetivo est√°n en las variables
+	  34 y 35 respectivamente (es como WHATO seguido de DROP [8]).
 	  Salida:       TRUE si se pudo dejar el objeto
 			FALSE si no se pudo dejar
 ****************************************************************************/
 BOOLEAN autod(void)
 {
-
-whato();
-
-return(drop(getvar(8)));
+	whato();
+	return(drop(getflag(FRFOBJ)));
 }
 
 /****************************************************************************
-	AUTOW: pone el objeto cuyo nombre-adjetivo est†n en las variables
-	  3 y 4 respectivamente (es como WHATO seguido de WEAR [8]).
+	AUTOW: pone el objeto cuyo nombre-adjetivo est√°n en las variables
+	  34 y 35 respectivamente (es como WHATO seguido de WEAR [8]).
 	  Salida:       TRUE si se pudo poner el objeto
 			FALSE si no se pudo poner
 ****************************************************************************/
 BOOLEAN autow(void)
 {
-
-whato();
-
-return(wear(getvar(8)));
+	whato();
+	return(wear(getflag(FRFOBJ)));
 }
 
 /****************************************************************************
-	AUTOR: quita el objeto cuyo nombre-adjetivo est†n en las variables
-	  3 y 4 respectivamente (es como WHATO seguido de REMOVE [8]).
+	AUTOR: quita el objeto cuyo nombre-adjetivo est√°n en las variables
+	  34 y 35 respectivamente (es como WHATO seguido de REMOVE [8]).
 	  Salida:       TRUE si se pudo quitar el objeto
 			FALSE si no se pudo quitar
 ****************************************************************************/
 BOOLEAN autor(void)
 {
-
-whato();
-
-return(remove1(getvar(8)));
+	whato();
+	return(remove1(getflag(FRFOBJ)));
 }
 
 /****************************************************************************
-	ISDOALL: comprueba si se est† ejecutando un bucle DOALL (FIRSTO ha
-	  sido ejecutado y NEXTO no ha alcanzado todav°a £ltimo objeto).
-	  Salida:       TRUE si se est† ejecutando un bucle DOALL
+	ISDOALL: comprueba si se est√° ejecutando un bucle DOALL (FIRSTO ha
+	  sido ejecutado y NEXTO no ha alcanzado todav√≠a √∫ltimo objeto).
+	  Salida:       TRUE si se est√° ejecutando un bucle DOALL
 			FALSE si no
 ****************************************************************************/
 BOOLEAN isdoall(void)
@@ -2732,60 +3082,60 @@ return(FALSE);
 /****************************************************************************
 	ASK: realiza una pregunta y espera hasta que se introduce la
 	  respuesta.
-	  Entrada:      'smess1' mensaje del sistema que contiene la pregunta
-			'smess2'    "     "     "    con las posibles
+	  Entrada:      'sysno1' mensaje del sistema que contiene la pregunta
+			'sysno2'    "     "     "    con las posibles
 			respuestas (cada una de una sola letra y seguidas,
-			no importa si en may£sculas o min£sculas), el m†ximo
-			n£mero de caracteres permitidos es 256 (0 a 255), si
-			son m†s, la variable 'varno' contendr† resultados
+			no importa si en may√∫sculas o min√∫sculas), el m√°ximo
+			n√∫mero de caracteres permitidos es 256 (0 a 255), si
+			son m√°s, el flag 'flagno' contendr√° resultados
 			imprevisibles
-			'varno' n£mero de variable que contendr† la respuesta
-	  Salida:       'varno'=0 si se tecle¢ 1er car†cter de 'smess2', 1 si
+			'flagno' n√∫mero de flag que contendr√° la respuesta
+	  Salida:       'flagno'=0 si se tecle√≥ 1er car√°cter de 'sysno2', 1 si
 			el 2?, 2 si el 3?, etc...
 ****************************************************************************/
-BOOLEAN ask(BYTE smess1, BYTE smess2, BYTE varno)
+BOOLEAN ask(BYTE sysno1, BYTE sysno2, BYTE flagno)
 {
 char *pm, tecla;
 int antx, anty;
 BYTE i;
 
 /* imprime la pregunta */
-sysmess(smess1);
-/* guarda posici¢n actual del cursor */
-antx=w[getvar(0)].cvx;
-anty=w[getvar(0)].cvy;
+sysmess(sysno1);
+/* guarda posici√≥n actual del cursor */
+antx=w[getflag(FACTWINDOW)].cvx;
+anty=w[getflag(FACTWINDOW)].cvy;
 while(1) {
 	/* recupera coordenadas */
-	w[getvar(0)].cvx=antx;
-	w[getvar(0)].cvy=anty;
+	w[getflag(FACTWINDOW)].cvx=antx;
+	w[getflag(FACTWINDOW)].cvy=anty;
 
 	/* imprime cursor */
-	vv_impc(*(tab_msy+tab_desp_msy[7]),&w[getvar(0)]);
+	vv_impc(*(tab_msy+tab_desp_msy[7]),&w[getflag(FACTWINDOW)]);
 
 	/* recupera coordenadas */
-	w[getvar(0)].cvx=antx;
-	w[getvar(0)].cvy=anty;
+	w[getflag(FACTWINDOW)].cvx=antx;
+	w[getflag(FACTWINDOW)].cvy=anty;
 
 	do {
 		tecla=mayuscula(vv_lee_tecla());
 	} while((BYTE)tecla==COD_RAT);
 
 	/* imprime tecla pulsada */
-	vv_impc(tecla,&w[getvar(0)]);
+	vv_impc(tecla,&w[getflag(FACTWINDOW)]);
 
-	/* comienza b£squeda */
+	/* comienza b√∫squeda */
 	i=0;
 	/* puntero a mensaje con las respuestas */
-	pm=tab_msy+tab_desp_msy[smess2];
+	pm=tab_msy+tab_desp_msy[sysno2];
 
 	/* analiza hasta final de cadena */
 	while(*pm) {
 		if(mayuscula(*pm)==tecla) {
-			/* almacena n£mero de car†cter de smess2 y sale */
-			setvar(varno,i);
+			/* almacena n√∫mero de car√°cter de sysno2 y sale */
+			setflag(flagno,i);
 			return(TRUE);
 		}
-		/* pasa al siguiente car†cter de smess2 */
+		/* pasa al siguiente car√°cter de sysno2 */
 		pm++;
 		i++;
 	}
@@ -2794,30 +3144,30 @@ while(1) {
 }
 
 /****************************************************************************
-	QUIT: presenta el mensaje del sistema 24 (?Est†s seguro?) y pregunta
+	QUIT: presenta el mensaje del sistema 24 (?Est√°s seguro?) y pregunta
 	  para abandonar.
-	  Salida:       TRUE si se responde con el 1er car†cter del mensaje
+	  Salida:       TRUE si se responde con el 1er car√°cter del mensaje
 			del sistema 25
-			FALSE si se responde con el 2o car†cter del mensaje
+			FALSE si se responde con el 2o car√°cter del mensaje
 			del sistema 25
-	  NOTA: se usa la variable 11
+	  NOTA: se usa el flag 11
 ****************************************************************************/
 BOOLEAN quit(void)
 {
 
-/* hace pregunta '?Est†s seguro?' */
+/* hace pregunta '?Est√°s seguro?' */
 ask(24,25,11);
 newline();
 
-/* si respondi¢ con 1er car†cter */
-if(!getvar(11)) return(TRUE);
+/* si respondi√≥ con 1er car√°cter */
+if(!getflag(FASK)) return(TRUE);
 
 return(FALSE);
 }
 
 /****************************************************************************
-	SAVE: guarda la posici¢n actual en disco (variables, banderas y
-	  posici¢n actual de objetos).
+	SAVE: guarda la posici√≥n actual en disco (flags, banderas y
+	  posici√≥n actual de objetos).
 ****************************************************************************/
 BOOLEAN save(void)
 {
@@ -2825,65 +3175,44 @@ BOOLEAN raton;
 int h_save;
 
 /* coge estado actual del raton */
-raton=notzero(10);
+raton=getflagbit(FFLAGS, FFMOUSEON);
 
-sysmess(26);                    /* 'Nombre del fichero: ' */
-clear(10);                      /* desactiva pero no oculta rat¢n */
-vv_inputt(f_sl,MAXLONG,*(tab_msy+tab_desp_msy[7]),VVINP_CONV,&w[getvar(0)],0,0);
-if(raton) set(10);
+sysmess(60);                    /* 'Nombre del fichero: ' */
+clearflagbit(FFLAGS, FFMOUSEON);
+vv_inputt(f_sl,MAXLONG,*(tab_msy+tab_desp_msy[7]),VVINP_CONV,&w[getflag(FACTWINDOW)],0,0);
+if(raton) setflagbit(FFLAGS, FFMOUSEON); 
 newline();
 
 /* si el fichero ya existe */
 if(!access(f_sl,0)) {
 	ask(27,25,11);          /* 'Fichero ya existe. ?Quieres continuar? ' */
 	newline();
-	/* si respondi¢ con 2? car†cter del mensaje del sistema 25 */
-	if(getvar(11)) return(TRUE);
+	/* si respondi√≥ con 2? car√°cter del mensaje del sistema 25 */
+	if(getflag(FASK)) return(TRUE);
 }
 
 h_save=open(f_sl,O_CREAT|O_TRUNC|O_BINARY|O_RDWR,S_IREAD|S_IWRITE);
 
-/* si ocurri¢ un error en apertura */
+/* si ocurri√≥ un error en apertura */
 if(h_save==-1) {
-	sysmess(28);            /* 'Error de apertura de fichero.' */
+	sysmess(56);            /* 'Error de apertura de fichero.' */
 	return(TRUE);
 }
 
-/* escribe cadena de reconocimiento */
-if(write(h_save,SRECON,L_RECON+1)==-1) {
-	sysmess(29);            /* 'Error de entrada/salida en fichero.' */
-	close(h_save);
-	return(TRUE);
-}
-
-/* guarda variables */
-if(write(h_save,var,VARS)==-1) {
-	sysmess(29);            /* 'Error de entrada/salida en fichero.' */
-	close(h_save);
-	return(TRUE);
-}
-
-/* guarda banderas */
-if(write(h_save,flag,BANDS)==-1) {
-	sysmess(29);            /* 'Error de entrada/salida en fichero.' */
+/* guarda flags */
+if(write(h_save,flag,FLAGS)==-1) {
+	sysmess(57);            /* 'Error de entrada/salida en fichero.' */
 	close(h_save);
 	return(TRUE);
 }
 
 /* guarda localidades actuales de los objetos */
 if(write(h_save,loc_obj,MAX_OBJ)==-1) {
-	sysmess(29);            /* 'Error de entrada/salida en fichero.' */
+	sysmess(57);            /* 'Error de entrada/salida en fichero.' */
 	close(h_save);
 	return(TRUE);
 }
 
-/* G3.25: guarda la tabla de objetos completa, esto incluye las */
-/* banderas de objetos */
-if(write(h_save,tab_obj,cab.bytes_obj)==-1) {
-	sysmess(29);            /* 'Error de entrada/salida en fichero.' */
-	close(h_save);
-	return(TRUE);
-}
 
 close(h_save);
 
@@ -2891,125 +3220,82 @@ return(TRUE);
 }
 
 /****************************************************************************
-	LOAD: recupera de disco una posici¢n grabada con SAVE.
-	  Entrada:      'vtop' m†ximo n£mero de variable a recuperar (se
-			recuperar† desde la 0 hasta 'vtop' inclusive)
-			'ftop' m†ximo n£mero de bandera a recuperar (se
-			recuperar† desde la 0 hasta 'ftop' inclusive)
+	LOAD: recupera de disco una posici√≥n grabada con SAVE.
+	  Entrada:      'ftop' m√°ximo n√∫mero de flag a recuperar (se
+			recuperar√° desde la 0 hasta 'ftop' inclusive)
 ****************************************************************************/
-BOOLEAN load(BYTE vtop, BYTE ftop)
+BOOLEAN load(BYTE ftop)
 {
 int h_load, i, nbyte, nbit;
 BOOLEAN raton;
 BYTE mascara;
-char rec_ld[L_RECON+1];
-BYTE var_l[VARS];
-BYTE flag_l[BANDS];
+BYTE var_l[FLAGS];
 
-/* coge estado actual del rat¢n */
-raton=notzero(10);
 
-sysmess(26);                    /* 'Nombre del fichero: ' */
-clear(10);                      /* desactiva pero no oculta rat¢n */
-vv_inputt(f_sl,MAXLONG,*(tab_msy+tab_desp_msy[7]),VVINP_CONV,&w[getvar(0)],0,0);
-if(raton) set(10);
+/* coge estado actual del rat√≥n */
+raton=getflagbit(FFLAGS, FFMOUSEON);
+
+sysmess(60);                    			/* 'Nombre del fichero: ' */
+clearflagbit(FFLAGS, FFMOUSEON);                      /* desactiva pero no oculta rat√≥n */
+vv_inputt(f_sl,MAXLONG,*(tab_msy+tab_desp_msy[7]),VVINP_CONV,&w[getflag(FACTWINDOW)],0,0);
+if(raton) setflagbit(FFLAGS, FFMOUSEON);
 newline();
 
 h_load=open(f_sl,O_BINARY|O_RDONLY);
 
-/* si ocurri¢ un error en apertura */
-if(h_load==-1) {
-	sysmess(28);            /* 'Error de apertura de fichero.' */
+/* si ocurri√≥ un error en apertura */
+if(h_load==-1)
+{
+	sysmess(56);            /* 'Error de apertura de fichero.' */
 	return(TRUE);
 }
 
-/* recoge cadena de reconocimiento */
-if(read(h_load,rec_ld,L_RECON+1)==-1) {
-	sysmess(29);            /* 'Error de entrada/salida en fichero.' */
+
+/* recoge flags */
+if(read(h_load,var_l,FLAGS)==-1) 
+{
+	sysmess(57);            /* 'Error de entrada/salida en fichero.' */
 	close(h_load);
 	return(TRUE);
 }
 
-/* comprueba cadena de reconocimiento */
-if(strcmp(rec_ld,SRECON)) {
-	sysmess(30);            /* 'Fichero no v†lido.' */
-	close(h_load);
-	return(TRUE);
-}
-
-/* recoge variables */
-if(read(h_load,var_l,VARS)==-1) {
-	sysmess(29);            /* 'Error de entrada/salida en fichero.' */
-	close(h_load);
-	return(TRUE);
-}
-
-#ifndef DAAD
-/* recoge banderas */
-if(read(h_load,flag_l,BANDS)==-1) {
-	sysmess(29);            /* 'Error de entrada/salida en fichero.' */
-	close(h_load);
-	return(TRUE);
-}
-#endif
 
 /* recoge localidad actual de los objetos */
-if(read(h_load,loc_obj,MAX_OBJ)==-1) {
-	sysmess(29);            /* 'Error de entrada/salida en fichero.' */
+if(read(h_load,loc_obj,MAX_OBJ)==-1) 
+{
+	sysmess(57);            /* 'Error de entrada/salida en fichero.' */
 	close(h_load);
 	return(TRUE);
 }
 
-#ifndef DAAD
-/* G3.25: recoge la tabla de objetos */
-if(read(h_load,tab_obj,cab.bytes_obj)==-1) {
-	sysmess(29);            /* 'Error de entrada/salida en fichero.' */
-	close(h_load);
-	return(TRUE);
-}
-#endif
 
-/* recupera variables */
-for(i=0; i<=(int)vtop; i++) setvar(i,var_l[i]);
+/* recupera flags */
+for(i=0; i<=(int)ftop; i++) setflag(i,var_l[i]);
 
-#ifndef DAAD
-/* recupera banderas */
-for(i=0; i<=(int)ftop; i++) {
-	nbyte=i/8;
-	nbit=i%8;
-	mascara=0x80;
-	mascara>>=nbit;
-	if(flag_l[nbyte] & mascara) set((BYTE)i);
-	else clear((BYTE)i);
-}
-
-/* G3.30: tabla de mensajes activa */
-tabla_msg=getvar(17);
-#endif
 
 close(h_load);
-
 
 return(TRUE);
 }
 
 /****************************************************************************
 	EXIT1: sale al sistema operativo o reinicia.
-	  Entrada:      'ex' si es 0 reinicia, si es 1 sale al sistema
+	  Entrada:      'ex' si es 1 reinicia, si es 0 sale al sistema
 			operativo
 ****************************************************************************/
 BOOLEAN exit1(BYTE ex)
 {
 unsigned i;
 
-/* sale al sistema operativo si 'ex' es 1 */
+/* sale al sistema operativo si 'ex' es 0 */
 if(ex==1) m_err(0,"",1);
 
-/* reinicializaci¢n */
+/* reinicializaci√≥n */
 /* borra la pantalla */
 cls();
 
-/* reinicializa variables */
+/* reinicializa flags
+ */
 inic();
 
 /* G3.25: recupera los objetos */
@@ -3018,17 +3304,17 @@ for(i=0; i<cab.bytes_obj; i++) tab_obj[i]=tab_obj2[i];
 /* se pone al inicio de proceso 0 */
 restart();
 
-/* -1 a ptr_proc (y -1 del restart), luego se sumar†n 2 */
+/* -1 a ptr_proc (y -1 del restart), luego se sumar√°n 2 */
 ptr_proc--;
 
 return(FALSE);
 }
 
-#pragma warn -rvl
+
 /****************************************************************************
 	END: pregunta para otra partida o salir. Si se responde con el primer
-	  car†cter del mensaje del sistema 25, ejecuta un EXIT 0 (reiniciali-
-	  zaci¢n). Si no sale al sistema operativo.
+	  car√°cter del mensaje del sistema 25, ejecuta un EXIT 0 (reiniciali-
+	  zaci√≥n). Si no sale al sistema operativo.
 ****************************************************************************/
 BOOLEAN end1(void)
 {
@@ -3036,11 +3322,11 @@ BOOLEAN end1(void)
 ask(31,25,11);                          /* '?Lo intentas de nuevo? ' */
 newline();
 
-/* si respondi¢ con 1er car†cter del mensaje del sistema 25 */
-if(!getvar(11)) {
-	/* reinicializaci¢n */
+/* si respondi√≥ con 1er car√°cter del mensaje del sistema 25 */
+if(!getflag(FASK)) {
+	/* reinicializaci√≥n */
 	exit1(0);
-	/* +1 a ptr_proc (-2 del exit1), luego se sumar† 1 */
+	/* +1 a ptr_proc (-2 del exit1), luego se sumar√° 1 */
 	ptr_proc++;
 	return(FALSE);
 }
@@ -3049,79 +3335,86 @@ if(!getvar(11)) {
 exit1(1);
 
 }
-#pragma warn +rvl
+
 
 /****************************************************************************
-	PRINTAT: coloca el cursor en una posici¢n dada de la ventana actual.
+	PRINTAT: coloca el cursor en una posici√≥n dada de la ventana actual.
 	  Entrada:      'y', 'x' coordenada del cursor (fila, columna); si
-			salen de los l°mites de la ventana el cursor se
-			colocar† en la esquina superior izquierda (0,0)
+			salen de los l√≠mites de la ventana el cursor se
+			colocar√° en la esquina superior izquierda (0,0)
 ****************************************************************************/
 BOOLEAN printat(BYTE y, BYTE x)
 {
+	/* si se sale de ventana coloca cursor en esquina superior izquierda */
+	if((y>(BYTE)(w[getflag(FACTWINDOW)].lyi-1)) || (x>(BYTE)(w[getflag(FACTWINDOW)].lxi-1))) y=x=0;
 
-/* si se sale de ventana coloca cursor en esquina superior izquierda */
-if((y>(BYTE)(w[getvar(0)].lyi-1)) || (x>(BYTE)(w[getvar(0)].lxi-1))) y=x=0;
+	w[getflag(FACTWINDOW)].cvy=y*w[getflag(FACTWINDOW)].chralt;
+	w[getflag(FACTWINDOW)].cvx=x*8;
 
-w[getvar(0)].cvy=y*w[getvar(0)].chralt;
-w[getvar(0)].cvx=x*8;
-
-return(TRUE);
+	return(TRUE);
 }
 
 /****************************************************************************
-	SAVEAT: almacena la posici¢n de impresi¢n de la ventana actual. Cada
-	  ventana tiene sus propias posiciones de impresi¢n almacenadas.
+	TAB: cambia la columna en la que se escribe en la ventana actual
+****************************************************************************/
+BOOLEAN TAB(BYTE col)
+{
+	w[getflag(FACTWINDOW)].cvx=col*8;
+}
+
+/****************************************************************************
+	SAVEAT: almacena la posici√≥n de impresi√≥n de la ventana actual. Cada
+	  ventana tiene sus propias posiciones de impresi√≥n almacenadas.
 ****************************************************************************/
 BOOLEAN saveat(void)
 {
 
-w[getvar(0)].cvxs=w[getvar(0)].cvx;
-w[getvar(0)].cvys=w[getvar(0)].cvy;
+w[getflag(FACTWINDOW)].cvxs=w[getflag(FACTWINDOW)].cvx;
+w[getflag(FACTWINDOW)].cvys=w[getflag(FACTWINDOW)].cvy;
 
 return(TRUE);
 }
 
 /****************************************************************************
-	BACKAT: recupera la posici¢n de impresi¢n guardada por el £ltimo
+	BACKAT: recupera la posici√≥n de impresi√≥n guardada por el √∫ltimo
 	  SAVEAT en la ventana actual.
-	  NOTA: si no se ejecut¢ ning£n SAVEAT, la posici¢n de impresi¢n
-	  recuperada ser† la (0,0).
+	  NOTA: si no se ejecut√≥ ning√∫n SAVEAT, la posici√≥n de impresi√≥n
+	  recuperada ser√° la (0,0).
 ****************************************************************************/
 BOOLEAN backat(void)
 {
 
-w[getvar(0)].cvx=w[getvar(0)].cvxs;
-w[getvar(0)].cvy=w[getvar(0)].cvys;
+w[getflag(FACTWINDOW)].cvx=w[getflag(FACTWINDOW)].cvxs;
+w[getflag(FACTWINDOW)].cvy=w[getflag(FACTWINDOW)].cvys;
 
 return(TRUE);
 }
 
 /****************************************************************************
-	NEWTEXT: deshecha el resto de la l°nea de input que a£n queda por
+	NEWTEXT: deshecha el resto de la l√≠nea de input que a√∫n queda por
 	  analizar y coloca el puntero al final de la misma.
 ****************************************************************************/
 BOOLEAN newtext(void)
 {
+	/* coloca puntero al final de la frase */
+	for(; *lin; lin++);
+	/* indica que no queda m√°s por analizar */
+	mas_texto=TRUE;
 
-/* coloca puntero al final de la frase */
-for(; *lin; lin++);
-/* indica que no queda m†s por analizar */
-mas_texto=TRUE;
-
-return(TRUE);
+	return(TRUE);
 }
 
+/** FALTA: ESTO NO ES DAAD */
 /****************************************************************************
-	PRINTC: imprime un car†cter en la posici¢n actual del cursor y dentro
+	PRINTC: imprime un car√°cter en la posici√≥n actual del cursor y dentro
 	  de la ventana activa.
-	  Entrada:      'car' c¢digo ASCII del car†cter a imprimir
+	  Entrada:      'car' c√≥digo ASCII del car√°cter a imprimir
 ****************************************************************************/
 BOOLEAN printc(BYTE car)
 {
 
-/* imprime el car†cter en la ventana activa */
-vv_impc(car,&w[getvar(0)]);
+/* imprime el car√°cter en la ventana activa */
+vv_impc(car,&w[getflag(0)]);
 
 return(TRUE);
 }
@@ -3129,85 +3422,37 @@ return(TRUE);
 /****************************************************************************
 	INK: selecciona el color temporal del primer plano en la ventana
 	  activa.
-	  Todos los textos de esa ventana se imprimir†n con ese color de
+	  Todos los textos de esa ventana se imprimir√°n con ese color de
 	  tinta.
-	  Entrada:      'color' °ndice de color
+	  Entrada:      'color' √≠ndice de color
 ****************************************************************************/
 BOOLEAN ink(BYTE color)
 {
 
-w[getvar(0)].colort=color;
+w[getflag(FACTWINDOW)].colort=color;
 
 return(TRUE);
 }
 
 /****************************************************************************
 	PAPER: selecciona el color temporal del fondo en la ventana activa.
-	  Todos los textos de esa ventana se imprimir†n con ese color de
+	  Todos los textos de esa ventana se imprimir√°n con ese color de
 	  fondo.
-	  Entrada:      'color' °ndice de color
+	  Entrada:      'color' √≠ndice de color
 ****************************************************************************/
 BOOLEAN paper(BYTE color)
 {
 
-w[getvar(0)].colortf=color;
+w[getflag(FACTWINDOW)].colortf=color;
 
 return(TRUE);
 }
 
-#pragma warn -par
-/****************************************************************************
-	BRIGHT: selecciona el atributo de brillo temporal para la ventana
-	  activa. Todos los textos de esa ventana se imprimir†n con ese
-	  brillo.
-	  Entrada:      'b' brillo (0=sin brillo, 1=con brillo)
-	  NOTA: este condacto ya no sirve para nada, se mantiene por compa-
-	  tibilidad con versiones anteriores
-****************************************************************************/
-BOOLEAN bright(BYTE b)
-{
-
-return(TRUE);
-}
-
-/****************************************************************************
-	BLINK: selecciona el atributo de parpadeo temporal para la ventana
-	  activa. Todos los textos de esa ventana se imprimir†n con ese
-	  parpadeo.
-	  Entrada:      'b' parpadeo (0=sin parpadeo, 1=con parpadeo)
-	  NOTA: este condacto ya no sirve para nada, se mantiene por compa-
-	  tibilidad con versiones anteriores
-****************************************************************************/
-BOOLEAN blink(BYTE b)
-{
-
-return(TRUE);
-}
-#pragma warn +par
-
-/****************************************************************************
-	COLOR: selecciona un color (fondo y primer plano ) temporal para la
-	  ventana activa.
-	  Entrada:      'col' color, los 4 bits altos indican el °ndice del
-	    color de fondo y los 4 bits bajos el del color de primer plano
-****************************************************************************/
-BOOLEAN color(BYTE col)
-{
-
-/* color de fondo */
-w[getvar(0)].colortf=(col >> 4);
-/* color de primer plano */
-w[getvar(0)].colort=(col & 0x0f);
-
-return(TRUE);
-}
-
-#pragma warn -par
 /****************************************************************************
 	DEBUG: activa o desctiva el paso a paso.
-	  Entrada:      'modo' indica si el paso a paso est† activado (1)
+	  Entrada:      'modo' indica si el paso a paso est√° activado (1)
 			o desactivado (0)
-	  NOTA: este condacto s¢lo es activo en el intÇrprete-debugger
+	  NOTA: este condacto s√≥lo es activo en el int√©rprete-debugger
 ****************************************************************************/
 BOOLEAN debug(BYTE modo)
 {
@@ -3215,7 +3460,7 @@ BOOLEAN debug(BYTE modo)
 #if DEBUGGER==1
 if(modo) {
 	debugg=TRUE;
-	/* indicamos que no es primera l°nea de */
+	/* indicamos que no es primera l√≠nea de */
 	/* entrada para que imp_condacto() no */
 	/* imprima el verbo-nombre ya que el puntero */
 	/* al condacto puede no estar ajustado */
@@ -3226,32 +3471,18 @@ else debugg=FALSE;
 
 return(TRUE);
 }
-#pragma warn +par
 
-/****************************************************************************
-	WBORDER: define tipo de borde de una ventana.
-	  Entrada:      'nw' n£mero de ventana
-			'borde' tipo de borde de la ventana
-****************************************************************************/
-BOOLEAN wborder(BYTE nw, BYTE borde)
-{
-
-vv_crea(w[nw].vy,w[nw].vx,w[nw].lx,w[nw].ly,w[nw].colorf,w[nw].color,borde,
-  &w[nw]);
-
-return(TRUE);
-}
 
 /****************************************************************************
 	CHARSET: carga y selecciona un nuevo juego de caracteres.
-	  Entrada:      'set' n£mero del juego de caracteres (0-255), si se
-			introduce 0, se seleccionar† el juego de caracteres
+	  Entrada:      'set' n√∫mero del juego de caracteres (0-255), si se
+			introduce 0, se seleccionar√° el juego de caracteres
 			por defecto.
-	  Salida:       TRUE si se carg¢ la fuente con Çxito
-			FALSE si hubo alg£n error o la tarjeta gr†fica no
+	  Salida:       TRUE si se carg√≥ la fuente con √©xito
+			FALSE si hubo alg√∫n error o la tarjeta gr√°fica no
 			soporta cambio del juego de caracteres
 	  NOTA: los juegos de caracteres deben estar en ficheros cuyo nombre
-	  sea F#??????.ext siendo 'ext' el n£mero identificador de 1 a 255,
+	  sea F#??????.ext siendo 'ext' el n√∫mero identificador de 1 a 255,
 	  por ejemplo: F#SIMPLEF.1, F#EPICO1.2, ...
 ****************************************************************************/
 BOOLEAN charset(BYTE set)
@@ -3266,14 +3497,14 @@ if(!set) {
 	return(TRUE);
 }
 
-/* construye nombre de fichero a?adiendo extensi¢n */
+/* construye nombre de fichero a?adiendo extensi√≥n */
 itoa((int)set,num,10);
 strcat(nombre,num);
 
-/* busca el fichero y sale si no lo encontr¢ */
+/* busca el fichero y sale si no lo encontr√≥ */
 if(findfirst(nombre,&info,0)) return(FALSE);
 
-/* el nombre verdadero del fichero estar† en 'info.name' */
+/* el nombre verdadero del fichero estar√° en 'info.name' */
 /* lo carga y actualiza generador de caracteres */
 if(!carga_def(info.ff_name)) return(FALSE);
 
@@ -3281,123 +3512,64 @@ return(TRUE);
 }
 
 /****************************************************************************
-	EXTERN1: ejecuta un programa externo.
-	  Entrada:      'prg' n£mero identificativo del programa a ejecutar
-			'par' par†metro que se pasar† al programa externo
-			(se pasar† el n£mero 0-255 como una cadena de carac-
-			teres)
-	  Salida:       TRUE si se ejecut¢ con Çxito
-			FALSE si no se pudo ejecutar
-			NOTA: la variable 13 contendr† el c¢digo de salida
-			del proceso externo que se ejecut¢ (0 si no pudo
-			ejecutarse)
-	  NOTA: este condacto ejecutar† un fichero cuyo nombre sea 'EXTERn'
-	  siendo 'n' un n£mero de 0 a 255; as° una llamada a EXTERN 0
-	  ejecutar† el fichero EXTER0, EXTERN 128 ejecutar† el fichero
-	  EXTER128,...
-	  Se buscar† primero un fichero con extensi¢n .COM, si no se encuentra
-	  se buscar† un .EXE y finalmente un .BAT.
-	  Se pasar† el par†metro 'par' como si se hubiese tecleado en la
-	  l°nea del DOS: EXTERn par
+	EXTERN1: No soportado
 ****************************************************************************/
 BOOLEAN extern1(BYTE prg, BYTE par)
 {
-char nombre[9]="EXTER";
-char num[4], dir_var[10], dir_flag[10], com[128];
-int cod;
-
-/* construye nombre de fichero a?adiendo n£mero identificativo */
-itoa((int)prg,num,10);
-strcat(nombre,num);
-
-/* convierte par†metro en cadena ASCII */
-itoa((int)par,num,10);
-
-/* segmento:desplazamiento de tabla de variables */
-sprintf(dir_var,"%04X:%04X",FP_SEG((BYTE far *)&var[0]),
-  FP_OFF((BYTE far *)&var[0]));
-
-/* segmento:desplazamiento de tabla de banderas */
-sprintf(dir_flag,"%04X:%04X",FP_SEG((BYTE far *)&flag[0]),
-  FP_OFF((BYTE far *)&flag[0]));
-
-/* intenta ejecutar el programa */
-cod=spawnl(P_WAIT,nombre,nombre,num,dir_var,dir_flag,NULL);
-/* si no pudo ejecutar COM o EXE intenta ejecutar a travÇs del COMMAND.COM */
-/* por si es un fichero BAT */
-if(cod==-1) {
-	strcpy(com,nombre);
-	strcat(com," ");
-	strcat(com,num);
-	strcat(com," ");
-	strcat(com,dir_var);
-	strcat(com," ");
-	strcat(com,dir_flag);
-	cod=system(com);
-}
-
-/* pone a cero la variable 13 */
-setvar(13,0);
-
-if(cod==-1) return(FALSE);
-else {
-	setvar(13,(BYTE)cod);
-	return(TRUE);
-}
 
 }
 
 /****************************************************************************
 	GTIME: devuelve la hora real del sistema.
-	  Entrada:      'nv' n£mero de variable inicial d¢nde se colocar†
-			la hora; 'var' contendr† los segundos, 'var+1' los
-			minutos y 'var+2' la hora
-	  NOTA: si 'nv' es mayor de 253 el condacto no har† nada
+	  Entrada:      'nv' n√∫mero de flag inicial d√≥nde se colocar√°
+			la hora; 'flag' contendr√° los segundos, 'flag+1' los
+			minutos y 'flag+2' la hora
+	  NOTA: si 'nv' es mayor de 253 el condacto no har√° nada
 ****************************************************************************/
-BOOLEAN gtime(BYTE nv)
+BOOLEAN gtime(BYTE flagno)
 {
 struct time hora;
 
-/* comprueba que el n£mero de variable no sea mayor de 253 */
-if(nv>253) return(TRUE);
+/* comprueba que el n√∫mero de flag no sea mayor de FLASG - 3  */
+if(flagno>FLAGS-3) return(TRUE);
 
 /* recoge hora del sistema */
 gettime(&hora);
 
-/* guarda en variables los segundos, minutos y la hora en este orden */
+/* guarda en flags los segundos, minutos y la hora en este orden */
 /* segundos de 0 a 59 */
-setvar(nv,hora.ti_sec);
+setflag(flagno,hora.ti_sec);
 /* minutos de 0 a 59 */
-setvar(nv+1,hora.ti_min);
+setflag(flagno+1,hora.ti_min);
 /* hora de 0 a 23 */
-setvar(nv+2,hora.ti_hour);
+setflag(flagno+2,hora.ti_hour);
 
 return(TRUE);
 }
 
 /****************************************************************************
-	TIME: selecciona tiempo muerto y modo de temporizaci¢n del condacto
+	TIME: selecciona tiempo muerto y modo de temporizaci√≥n del condacto
 	  INPUT.
 	  Entrada:      'tiempo' tiempo muerto para INPUT en segundos
-			'modo' modo de temporizaci¢n; 0 si el tiempo se
+			'modo' modo de temporizaci√≥n; 0 si el tiempo se
 			da para teclear la frase completa, 1 si se da hasta
-			teclear primer car†cter
+			teclear primer car√°cter
 ****************************************************************************/
 BOOLEAN time1(BYTE tiempo, BYTE modo)
 {
 
-/* coloca el tiempo en la variable 16 */
-setvar(16,tiempo);
+/* coloca el tiempo en el flag 16 */
+setflag(FTIMEOUT,tiempo);
 
-/* coloca el modo en la bandera 6 */
-if(modo==0) clear(6);
-else set(6);
+/* coloca el modo en el flag  6 */
+if(modo==0) clearflagbit(FFLAGS, FTSTART);
+else setflagbit(FFLAGS, FTSTART);
 
 return(TRUE);
 }
 
 /****************************************************************************
-	TIMEOUT: comprueba si se produjo un tiempo muerto en el £ltimo
+	TIMEOUT: comprueba si se produjo un tiempo muerto en el √∫ltimo
 	  condacto INPUT.
 	  Salida:       TRUE si se produjo un tiempo muerto
 			FALSE si no
@@ -3405,15 +3577,15 @@ return(TRUE);
 BOOLEAN timeout(void)
 {
 
-/* si la variable 12 es 1 se produjo un tiempo muerto */
-if(getvar(12)==1) return(TRUE);
+/* si el flag 12 es 1 se produjo un tiempo muerto */
+if(getflag(FINPUT)==1) return(TRUE);
 else return(FALSE);
 
 }
 
 #pragma warn -use
 /****************************************************************************
-	MODE: selecciona el modo de v°deo.
+	MODE: selecciona el modo de v√≠deo.
 	  Entrada:      'modo' modo a seleccionar, 0 para 640x480x16, 1 para
 			320x200x256
 ****************************************************************************/
@@ -3441,19 +3613,19 @@ return(TRUE);
 #pragma warn +use
 
 /****************************************************************************
-	GRAPHIC: presenta un gr†fico en la ventana actual.
-	  Entrada:      'graf' n£mero de fichero GRF (librer°a)
-			'img' n£mero de imagen
+	GRAPHIC: presenta un gr√°fico en la ventana actual.
+	  Entrada:      'graf' n√∫mero de fichero GRF (librer√≠a)
+			'img' n√∫mero de imagen
 			'modo' modo de dibujo
-			  0 - dibuja la imagen seg£n la lee del disco
+			  0 - dibuja la imagen seg√∫n la lee del disco
 			  1 - dibuja la imagen al final
 			  2 - como 0 pero sin alterar paleta de colores
 			  3 - como 1 pero sin alterar paleta de colores
 			  otros valores se consideran igual a 0
-	  Salida:       TRUE si se carg¢ el gr†fico
-			FALSE si hubo alg£n error
-	  NOTA: los gr†ficos deben estar agrupados en ficheros GRF cuyo
-	  nombre sea G#??????.ext siendo 'ext' el n£mero identificador de 1
+	  Salida:       TRUE si se carg√≥ el gr√°fico
+			FALSE si hubo alg√∫n error
+	  NOTA: los gr√°ficos deben estar agrupados en ficheros GRF cuyo
+	  nombre sea G#??????.ext siendo 'ext' el n√∫mero identificador de 1
 	  a 255, por ejemplo: G#OBJET.1, G#PERSO.203, ...
 ****************************************************************************/
 BOOLEAN graphic(BYTE graf, BYTE img, BYTE modo)
@@ -3463,25 +3635,25 @@ struct ffblk info;
 char grafico[8]="G#*.", num[4];
 int x, y, ancho, alto, err, paleta=0;
 
-/* comprueba si modo es v†lido, si no le asigna 0 */
+/* comprueba si modo es v√°lido, si no le asigna 0 */
 if(modo>3) modo=0;
 
 /* si es modo 2 o 3 indica que hay que conservar paleta */
 if((modo==2) || (modo==3)) paleta=1;
 
-/* construye nombre de fichero a?adiendo extensi¢n */
+/* construye nombre de fichero a?adiendo extensi√≥n */
 itoa((int)graf,num,10);
 strcat(grafico,num);
 
 /* busca el fichero y sale si no lo encuentra */
-/* el nombre verdadero del fichero estar† en 'info.ff_name' */
+/* el nombre verdadero del fichero estar√° en 'info.ff_name' */
 if(findfirst(grafico,&info,0)) return(FALSE);
 
-/* calcula posici¢n y dimensiones de la ventana actual, en pixels */
-x=w[getvar(0)].vxi*8;
-y=w[getvar(0)].vyi*w[getvar(0)].chralt;
-ancho=w[getvar(0)].lxi*8;
-alto=w[getvar(0)].lyi*w[getvar(0)].chralt;
+/* calcula posici√≥n y dimensiones de la ventana actual, en pixels */
+x=w[getflag(FACTWINDOW)].vxi*8;
+y=w[getflag(FACTWINDOW)].vyi*w[getflag(FACTWINDOW)].chralt;
+ancho=w[getflag(FACTWINDOW)].lxi*8;
+alto=w[getflag(FACTWINDOW)].lyi*w[getflag(FACTWINDOW)].chralt;
 
 rg_puntero(RG_OCULTA);
 if((modo==0) || (modo==2)) err=grf_visualiza(info.ff_name,img,x,y,ancho,alto,
@@ -3504,15 +3676,15 @@ return(TRUE);
 
 /****************************************************************************
 	REMAPC: permite cambiar uno de los colores de la paleta.
-	  Entrada:      'color' °ndice del color a cambiar
+	  Entrada:      'color' √≠ndice del color a cambiar
 			'r', 'g', 'b' valor de las componentes RGB del color
 ****************************************************************************/
 BOOLEAN remapc(BYTE color, BYTE r, BYTE g, BYTE b)
 {
 
-/* si en modo de 16 colores ajusta el °ndice de color para que no */
-/* sobrepase el m†ximo permitido */
-if(zero(5) && (color>15)) color=15;
+/* si en modo de 16 colores ajusta el √≠ndice de color para que no */
+/* sobrepase el m√°ximo permitido */
+if((getflag(FVIDEOMODE)==0) && (color>15)) color=15;
 
 asm {
 	mov ax,1010h
@@ -3528,9 +3700,9 @@ return(TRUE);
 }
 
 /****************************************************************************
-	SETAT: activa una bandera de usuario del objeto actual (cuyo n£mero
-	  est† en la variable del sistema 8).
-	  Entrada:      'val' n£mero de bandera de usuario a activar
+	SETAT: activa una bandera de usuario del objeto actual (cuyo n√∫mero
+	  est√° en el flag del sistema 8).
+	  Entrada:      'val' n√∫mero de bandera de usuario a activar
 			(0 a 17), 16 activa PRENDA y 17 activa FUENTE DE LUZ
 ****************************************************************************/
 BOOLEAN setat(BYTE val)
@@ -3539,7 +3711,7 @@ char *po;
 unsigned flags2, masc=0x8000;
 
 /* puntero a banderas2 de objeto */
-po=tab_obj+tab_desp_obj[getvar(8)]+4;
+po=tab_obj+tab_desp_obj[getflag(FRFOBJ)]+4;
 
 /* activa PRENDA */
 if(val==16) {
@@ -3555,7 +3727,7 @@ if(val==17) {
 /* coge las banderas de usuario */
 flags2=((*po)*256)+(*(po+1));
 
-/* desplaza m†scara */
+/* desplaza m√°scara */
 masc >>= val;
 
 /* pone a 1 el bit correspondiente */
@@ -3570,8 +3742,8 @@ return(TRUE);
 
 /****************************************************************************
 	CLEARAT: desactiva una bandera de usuario del objeto actual (cuyo
-	  n£mero est† en la variable del sistema 8).
-	  Entrada:      'val' n£mero de bandera de usuario a desactivar
+	  n√∫mero est√° en el flag del sistema 8).
+	  Entrada:      'val' n√∫mero de bandera de usuario a desactivar
 			(0 a 17), 16 activa PRENDA y 17 activa FUENTE DE LUZ
 ****************************************************************************/
 BOOLEAN clearat(BYTE val)
@@ -3580,7 +3752,7 @@ char *po;
 unsigned flags2, masc=0x8000;
 
 /* puntero a banderas2 de objeto */
-po=tab_obj+tab_desp_obj[getvar(8)]+4;
+po=tab_obj+tab_desp_obj[getflag(FRFOBJ)]+4;
 
 /* desactiva PRENDA */
 if(val==16) {
@@ -3596,7 +3768,7 @@ if(val==17) {
 /* coge las banderas de usuario */
 flags2=((*po)*256)+(*(po+1));
 
-/* desplaza m†scara */
+/* desplaza m√°scara */
 masc >>= val;
 masc ^= 0xffff;
 
@@ -3612,17 +3784,17 @@ return(TRUE);
 
 /****************************************************************************
 	GETRGB: devuelve las componentes RGB de un color de la paleta.
-	  Entrada:      'color' °ndice del color
-			'var1', 'var2', 'var3' variables donde se
-			almacenar†n las 3 componentes RGB en este orden
+	  Entrada:      'color' √≠ndice del color
+			'flag1', 'flag2', 'flag3' flags donde se
+			almacenar√°n las 3 componentes RGB en este orden
 ****************************************************************************/
-BOOLEAN getrgb(BYTE color, BYTE var1, BYTE var2, BYTE var3)
+BOOLEAN getrgb(BYTE color, BYTE flag1, BYTE flag2, BYTE flag3)
 {
 BYTE r, g, b;
 
-/* si en modo de 16 colores ajusta el °ndice de color para que no */
-/* sobrepase el m†ximo permitido */
-if(zero(5) && (color>15)) color=15;
+/* si en modo de 16 colores ajusta el √≠ndice de color para que no */
+/* sobrepase el m√°ximo permitido */
+if((getflag(FVIDEOMODE)==0) && (color>15)) color=15;
 
 asm {
 	mov ax,1015h
@@ -3634,23 +3806,23 @@ asm {
 	mov b,cl
 }
 
-setvar(var1,r);
-setvar(var2,g);
-setvar(var3,b);
+setflag(flag1,r);
+setflag(flag2,g);
+setflag(flag3,b);
 
 return(TRUE);
 }
 
 /****************************************************************************
-	PLAYFLI: visualiza una animaci¢n FLI.
-	  Entrada:      'fli' n£mero de la animaci¢n
-			'modo' modo de animaci¢n
+	PLAYFLI: visualiza una animaci√≥n FLI.
+	  Entrada:      'fli' n√∫mero de la animaci√≥n
+			'modo' modo de animaci√≥n
 			 0 - hasta que se pulse una tecla
-			 1 - s¢lo una vez
-	  Salida:       TRUE si pudo ejecutar la animaci¢n
-			FALSE si hubo alg£n error
+			 1 - s√≥lo una vez
+	  Salida:       TRUE si pudo ejecutar la animaci√≥n
+			FALSE si hubo alg√∫n error
 	  NOTA: las animaciones deben estar en ficheros cuyo nombre sea
-	  A#??????.ext siendo 'ext' el n£mero identificador de 1 a 255,
+	  A#??????.ext siendo 'ext' el n√∫mero identificador de 1 a 255,
 	  por ejemplo: A#INTRO.1, A#AVION.203, ...
 ****************************************************************************/
 BOOLEAN playfli(BYTE fli, BYTE modo)
@@ -3659,18 +3831,18 @@ Errval err;
 struct ffblk info;
 char flianim[8]="A#*.", num[4];
 
-/* comprueba que modo de pantalla sea v†lido */
-if(zero(5)) return(FALSE);
+/* comprueba que modo de pantalla sea v√°lido */
+if(getflag(FVIDEOMODE)==0) return(FALSE);
 
-/* comprueba si modo es v†lido, si no le asigna 0 */
+/* comprueba si modo es v√°lido, si no le asigna 0 */
 if(modo>1) modo=0;
 
-/* construye nombre de fichero a?adiendo extensi¢n */
+/* construye nombre de fichero a?adiendo extensi√≥n */
 itoa((int)fli,num,10);
 strcat(flianim,num);
 
 /* busca el fichero y sale si no lo encuentra */
-/* el nombre verdadero del fichero estar† en 'info.ff_name' */
+/* el nombre verdadero del fichero estar√° en 'info.ff_name' */
 if(findfirst(flianim,&info,0)) return(FALSE);
 
 rg_puntero(RG_OCULTA);
@@ -3684,7 +3856,7 @@ return(TRUE);
 }
 
 /****************************************************************************
-	MOUSE: activa/desactiva el rat¢n.
+	MOUSE: activa/desactiva el rat√≥n.
 	  Entrada:      'modo' 0 desactiva, 1 activa
 ****************************************************************************/
 BOOLEAN mouse(BYTE modo)
@@ -3692,26 +3864,26 @@ BOOLEAN mouse(BYTE modo)
 
 if(modo==0) {
 	rg_desconecta();
-	clear(10);
+	clearflagbit(FFLAGS, FFMOUSEON);
 }
-else if(rg_inicializa()) set(10);
+else if(rg_inicializa()) setflag(FFLAGS, FFMOUSEON);
 
 return(TRUE);
 }
 
 /****************************************************************************
-	MOUSEXY: comprueba coordenadas del rat¢n.
+	MOUSEXY: comprueba coordenadas del rat√≥n.
 	  Entrada:      'fil0', 'col0' esquina superior izquierda
 			'fil1', 'col1' esquina inferior derecha
-	  Salida:       TRUE si rat¢n se encuentra dentro del †rea definida
-			por las coordenadas, FALSE si no o rat¢n desactivado
+	  Salida:       TRUE si rat√≥n se encuentra dentro del √°rea definida
+			por las coordenadas, FALSE si no o rat√≥n desactivado
 ****************************************************************************/
 BOOLEAN mousexy(BYTE fil0, BYTE col0, BYTE fil1, BYTE col1)
 {
 STC_RATONG r;
 
-/* sale si rat¢n desactivado */
-if(zero(10)) return(FALSE);
+/* sale si rat√≥n desactivado */
+if(!getflagbit(FFLAGS, FFMOUSEON)) return(FALSE);
 
 rg_estado(&r);
 
@@ -3722,21 +3894,21 @@ return(FALSE);
 }
 
 /****************************************************************************
-	MOUSEBT: comprueba estado de botones del rat¢n.
-	  Entrada:      'btn' bot¢n a comprobar
+	MOUSEBT: comprueba estado de botones del rat√≥n.
+	  Entrada:      'btn' bot√≥n a comprobar
 			 0 - izquierdo
 			 1 - derecho
 			 2 - ambos
 			 3 - cualquiera de los dos
-	  Salida:       TRUE si bot¢n/es pulsado/s, FALSE si no o rat¢n
+	  Salida:       TRUE si bot√≥n/es pulsado/s, FALSE si no o rat√≥n
 			desactivado
 ****************************************************************************/
 BOOLEAN mousebt(BYTE btn)
 {
 STC_RATONG r;
 
-/* sale si rat¢n desactivado */
-if(zero(10)) return(FALSE);
+/* sale si rat√≥n desactivado */
+if(!getflagbit(FFLAGS, FFMOUSEON)) return(FALSE);
 
 rg_estado(&r);
 
@@ -3750,8 +3922,8 @@ return(FALSE);
 
 /****************************************************************************
 	PLAY: toca una nota.
-	  Entrada:      'nota' n£mero de nota a tocar
-			'dur' duraci¢n en dÇcimas de segundo
+	  Entrada:      'nota' n√∫mero de nota a tocar
+			'dur' duraci√≥n en d√©cimas de segundo
 ****************************************************************************/
 BOOLEAN play(BYTE nota, BYTE dur)
 {
@@ -3762,15 +3934,15 @@ return(TRUE);
 }
 
 /****************************************************************************
-	MUSIC: reproduce una melod°a de un fichero SND.
-	  Entrada:      'mus' n£mero de la melod°a
-			'modo' modo de reproduci¢n
-			 0 - s¢lo una vez
-			 1 - c°clicamente
-	  Salida:       TRUE si pudo reproducir la melod°a
-			FALSE si hubo alg£n error
-	  NOTA: las melod°as deben estar en ficheros cuyo nombre sea
-	  M#??????.ext siendo 'ext' el n£mero identificador de 1 a 255,
+	MUSIC: reproduce una melod√≠a de un fichero SND.
+	  Entrada:      'mus' n√∫mero de la melod√≠a
+			'modo' modo de reproduci√≥n
+			 0 - s√≥lo una vez
+			 1 - c√≠clicamente
+	  Salida:       TRUE si pudo reproducir la melod√≠a
+			FALSE si hubo alg√∫n error
+	  NOTA: las melod√≠as deben estar en ficheros cuyo nombre sea
+	  M#??????.ext siendo 'ext' el n√∫mero identificador de 1 a 255,
 	  por ejemplo: M#INIC.1, M#MUSI.203, ...
 ****************************************************************************/
 BOOLEAN music(BYTE mus, BYTE modo)
@@ -3779,15 +3951,15 @@ struct ffblk info;
 char musica[8]="M#*.", num[4];
 int err;
 
-/* comprueba si modo es v†lido, si no le asigna 0 */
+/* comprueba si modo es v√°lido, si no le asigna 0 */
 if(modo>1) modo=0;
 
-/* construye nombre de fichero a?adiendo extensi¢n */
+/* construye nombre de fichero a?adiendo extensi√≥n */
 itoa((int)mus,num,10);
 strcat(musica,num);
 
 /* busca el fichero y sale si no lo encuentra */
-/* el nombre verdadero del fichero estar† en 'info.ff_name' */
+/* el nombre verdadero del fichero estar√° en 'info.ff_name' */
 if(findfirst(musica,&info,0)) return(FALSE);
 
 if(modo==0) err=bpr_musica(info.ff_name,SND_SOLO);
