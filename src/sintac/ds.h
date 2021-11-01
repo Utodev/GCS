@@ -3,6 +3,8 @@
 	de DS.C
 **************************************/
 
+#define DEBUGGER   0
+
 /*** Constantes ***/
 #define WDEB_FIL    0           /* fila ventana debugger */
 #define WDEB_COL    0           /* columna ventana debugger */
@@ -40,7 +42,7 @@ void debugger(BYTE indir, BYTE npar, BYTE *pro_d);
 #endif
 
 void modo_video(int modo);
-void carga_bd(char *nombre);
+void carga_db(char *nombre);
 void codifica(BYTE *mem, unsigned bytes_mem);
 void inic(void);
 void frd(FILE *fbd, void *buff, size_t tam, size_t cant);

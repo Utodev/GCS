@@ -1,0 +1,51 @@
+MAKE Version 3.6  Copyright (c) 1992 Borland International
+
+Available memory 15350336 bytes
+
+	bcc -c -ml -N -G -O -v -d -Ic:\util\borlandc\include;..\graflib;..\ventanas;..\flilib condacto.c
+Borland C++  Version 3.1 Copyright (c) 1992 Borland International
+condacto.c:
+Warning condacto.c 91: Nonportable pointer conversion
+Error condacto.c 92: Nonportable pointer conversion
+Error condacto.c 92: Illegal initialization
+Warning condacto.c 93: Nonportable pointer conversion
+Error condacto.c 93: Nonportable pointer conversion
+Error condacto.c 93: Illegal initialization
+Warning condacto.c 94: Nonportable pointer conversion
+Error condacto.c 94: Nonportable pointer conversion
+Error condacto.c 94: Illegal initialization
+Warning condacto.c 95: Nonportable pointer conversion
+Error condacto.c 95: Nonportable pointer conversion
+Error condacto.c 95: Illegal initialization
+Warning condacto.c 96: Nonportable pointer conversion
+Error condacto.c 96: Nonportable pointer conversion
+Error condacto.c 96: Illegal initialization
+Warning condacto.c 97: Nonportable pointer conversion
+Error condacto.c 97: Nonportable pointer conversion
+Error condacto.c 97: Illegal initialization
+Warning condacto.c 98: Nonportable pointer conversion
+Error condacto.c 98: Nonportable pointer conversion
+Error condacto.c 98: Illegal initialization
+Warning condacto.c 99: Nonportable pointer conversion
+Error condacto.c 99: Nonportable pointer conversion
+Error condacto.c 99: Illegal initialization
+Warning condacto.c 100: Nonportable pointer conversion
+Error condacto.c 100: Nonportable pointer conversion
+Error condacto.c 100: Illegal initialization
+Warning condacto.c 101: Nonportable pointer conversion
+Error condacto.c 101: Nonportable pointer conversion
+Error condacto.c 101: Illegal initialization
+Warning condacto.c 102: Nonportable pointer conversion
+Error condacto.c 102: Nonportable pointer conversion
+Error condacto.c 102: Illegal initialization
+Warning condacto.c 103: Nonportable pointer conversion
+Error condacto.c 103: Nonportable pointer conversion
+Error condacto.c 103: Illegal initialization
+Warning condacto.c 104: Nonportable pointer conversion
+Error condacto.c 104: Nonportable pointer conversion
+Error condacto.c 104: Too many error or warning messages
+*** 26 errors in Compile ***
+
+	Available memory 4085860
+
+** error 1 ** deleting condacto.obj

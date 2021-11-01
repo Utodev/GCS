@@ -5,15 +5,16 @@
 
 CC = bcc
 CINCLUDE = c:\borlandc\include;..;..\..\graflib;..\..\ventanas;..\..\ventanag
-CFLAGS = -ml -N -G -O -v -d -I$(CINCLUDE)
+LINCLUDE = c:\borlandc\lib
+CFLAGS = -ml -N -G -O -v -d -I$(CINCLUDE) -L$(LINCLUDE)
 ASM = tasm
 AFLAGS = /mx /zi /o
 
 .c.obj:
-	$(CC) -c $(CFLAGS) $<
+        $(CC) -c $(CFLAGS) $<
 
 .asm.obj:
-	$(ASM) $(AFLAGS) $<
+        $(ASM) $(AFLAGS) $<
 
 
 all: gcs.exe grfs.exe gmuss.exe
@@ -23,7 +24,7 @@ all: gcs.exe grfs.exe gmuss.exe
 #
 GCS = gcs.obj ..\..\graflib\grafl.lib ..\..\ventanag\ventangl.lib
 gcs.exe : $(GCS)
-	$(CC) -egcs.exe @&&|
+        $(CC) -egcs.exe @&&|
 $(CFLAGS)
 $(GCS)
 |
@@ -33,7 +34,7 @@ $(GCS)
 #
 GRFS = grfs.obj grfpcx.obj ..\..\graflib\grafl.lib ..\..\ventanas\ventanal.lib
 grfs.exe : $(GRFS)
-	$(CC) -egrfs.exe @&&|
+        $(CC) -egrfs.exe @&&|
 $(CFLAGS)
 $(GRFS)
 |
@@ -43,7 +44,7 @@ $(GRFS)
 #
 GMUSS = gmuss.obj sonido.obj ..\..\graflib\grafl.lib ..\..\ventanas\ventanal.lib
 gmuss.exe : $(GMUSS)
-	$(CC) -egmuss.exe @&&|
+        $(CC) -egmuss.exe @&&|
 $(CFLAGS)
 $(GMUSS)
 |
@@ -51,12 +52,13 @@ $(GMUSS)
 #
 # OBJS
 #
-gcs.obj		: gcs.c
+gcs.obj         : gcs.c
 
-grfs.obj	: grfs.c
-grfpcx.obj	: ..\grfpcx.c
-	$(CC) -c $(CFLAGS) ..\grfpcx.c
+grfs.obj        : grfs.c
+grfpcx.obj      : ..\grfpcx.c
+        $(CC) -c $(CFLAGS) ..\grfpcx.c
 
-gmuss.obj	: gmuss.c
-sonido.obj	: ..\sonido.c
-	$(CC) -c $(CFLAGS) ..\sonido.c
+gmuss.obj       : gmuss.c
+sonido.obj      : ..\sonido.c
+        $(CC) -c $(CFLAGS) ..\sonido.c
+

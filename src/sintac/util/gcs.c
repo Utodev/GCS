@@ -51,7 +51,7 @@ STC_RATONG r;
 STC_MENUG *m0, *m1, *m2, *m3;
 char drive[MAXDRIVE], dir[MAXDIR], file[MAXFILE], ext[MAXEXT], nf_icn[MAXPATH];
 char *s, *cab="GENERADOR DE CARACTERES SINTAC versi¢n "GCS_VERSION
-  "  (c)1995-2020 JSJ Soft Ltd.";
+  "  (c)1995-2021 JSJ Soft Ltd.";
 int mvid, tecla, cuad_x=0, cuad_y=0, i, j;
 
 /* recoge directorio d¢nde est  el programa */
@@ -1147,7 +1147,7 @@ if(fwrite(tabla_anch8x8,sizeof(BYTE),256,ffuente)<256) {
 }
 
 /* Escribe cabecera de Spectrum +3 si necesario */
-if (type==1)
+if (type==3)
 {
 	if(fwrite(fake_plus3_header, 1, 128, ffuente) < 128) {
 		fclose(ffuente);
@@ -1272,6 +1272,9 @@ if (type==1)
 	}
 	else for(i=0; i<256; i++) tabla_anch8x8[i]=8;
 }
+
+//if (type==1) fseek(ffuente, 16*8, SEEK_CUR);
+
 
 /* definiciones 8x8 */
 num_bytes=(size_t)(256*8);

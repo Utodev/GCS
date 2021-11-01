@@ -1,4 +1,4 @@
-****************************************************************************
+/*****************************************************************************
 	Funciones para ejecutar cada uno de los condactos del SINTAC
 ****************************************************************************/
 
@@ -18,7 +18,6 @@
 #include "version.h"
 #include "sintac.h"
 #include "graf.h"
-#include "aafli.h"
 #include "vv.h"
 #include "grfpcx.h"
 #include "sonido.h"
@@ -33,7 +32,7 @@ extern unsigned char far *img_debug;    /* puntero buffer para fondo debug. */
 #endif
 
 
-extern CAB_SINTAC cab;          /* cabecera de fichero de base de datos */
+extern CAB_DAAD cab;          /* cabecera de fichero de base de datos */
 extern char nf_base_datos[MAXPATH];     /* nombre de fichero base de datos */
 extern BYTE *ptr_proc;          /* puntero auxiliar */
 extern unsigned sgte_ent;       /* desplazamiento de sgte. entrada */
@@ -88,7 +87,7 @@ unsigned char anchdef8x8[256];
 
 
 
-STC_CONDACTO cd[]={             /* tabla función-n? parámetros de condacto */
+DAAD_CONDACTO cd[]={            
 1,at, /*  0 $00 */
 1,notat, /*  1 $01 */
 1,atgt, /*  2 $$02 */

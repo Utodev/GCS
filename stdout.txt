@@ -1,0 +1,7 @@
+DOSBox version 0.74
+Copyright 2002-2010 DOSBox Team, published under GNU GPL.
+---
+CONFIG:Loading primary settings from config file compile_gcs.conf
+MIDI:Opened device:win32
+DOS keyboard layout loaded with main language code SP for layout sp
+DOSBox switched to max cycles, because of the setting: cycles=auto. If the game runs too fast try a fixed cycles amount in DOSBox's options.

@@ -2,3 +2,6 @@ SRC/SINTAC/*.EXE
 SRC/SINTAC/*.OBJ
 SRC/SINTAC/UTIL/*.EXE
 SRC/SINTAC/UTIL/*.OBJ
+original_src/*
+docs/*
+dosbox/*

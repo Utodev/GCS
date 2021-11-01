@@ -4,7 +4,7 @@
 .autodepend
 
 CC = bcc
-CINCLUDE = c:\util\bc\include;..\graflib;..\ventanas;..\flilib
+CINCLUDE = c:\util\borlandc\include;..\graflib;..\ventanas;..\flilib
 CFLAGS = -ml -N -G -O -v -d -I$(CINCLUDE)
 ASM = tasm
 AFLAGS = /mx /zi /o

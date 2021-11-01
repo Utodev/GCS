@@ -28,7 +28,7 @@ extern BYTE loc_obj[MAX_OBJ];   /* tabla de localidades act. de objetos */
 extern STC_VV w[N_VENT];        /* tabla para guardar parÃ¡metros de ventanas */
 extern int ptrp;                /* puntero de pila */
 extern STC_BANCORAM ram[BANCOS_RAM];    /* para RAMSAVE y RAMLOAD */
-extern STC_CONDACTO cd[];       /* tabla de funciÃ³n-tipo condactos */
+extern DAAD_CONDACTO cd[];       /* tabla de funciÃ³n-tipo condactos */
 
 /*** Variables globales ***/
 #if DEBUGGER==1 
@@ -42,7 +42,7 @@ unsigned char far *img_debug;   /* puntero buffer para fondo ventana debug. */
 #endif
 
 
-BYTE ddb[65536];
+BYTE *ddb; 
 CAB_DAAD cab;
 
 /* nombre de fichero de base de datos */
@@ -69,16 +69,16 @@ int columnastxt;                /* columnas de texto */
 
 /*** Programa principal ***/
 
-WORD getDDBWord(unsigned int address)
-{
-	return ddb[address] + 256 * ddb [(address + 1) % 0x10000];
-}
 
 BYTE getDDBByte(unsigned int address)
 {
-	return ddb[address];
+	return *(ddb+address);
 }
 
+WORD getDDBWord(unsigned int address)
+{
+	return *(ddb+address) + 256 * *(ddb + address + 1);
+}
 
 void main(int argc, char *argv[])
 {
@@ -135,8 +135,9 @@ void main(int argc, char *argv[])
 
 	cls();
 
+	ddb = (BYTE*) malloc(65535);
 	/* carga base de datos e inicializa variables */
-	carga_bd(argv[1]);
+	carga_db(argv[1]);
 
 	/* inicializa */
 	inic();
@@ -195,7 +196,8 @@ void main(int argc, char *argv[])
 
 		}
 		/* si fin de proceso */
-		else {
+		else
+		{
 			res_pro=done();
 			ptr_proc++;     /* ajustamos ptr_proc */
 
@@ -691,42 +693,39 @@ if(getflagbit(FFLAGS, FFMOUSEON)==TRUE)
 
 
 /****************************************************************************
-	CARGA_BD: carga la base de datos.
-	  Entrada:      'nombre' nombre de fichero de base de datos
+	carga_db: carga la base de datos.
+	Entrada:      'nombre' nombre de fichero de base de datos
 ****************************************************************************/
-void carga_bd(char *nombre)
+void carga_db(char *nombre)
 {
-FILE *fbd;
-char *errmem="No hay suficiente memoria";
-char *srecon=SRECON;
-unsigned i, bytes_msg;
-long ddb_size;
+	FILE *fdb;
+	unsigned i, bytes_msg;
+	long ddb_size;
 
-if((fbd=fopen(nombre,"rb"))==NULL)
-  m_err(1,"Error de apertura fichero de entrada",1);
+	if((fdb=fopen(nombre,"rb"))==NULL)
+	m_err(1,"Error de apertura fichero de entrada",1);
 
-/* guarda nombre de fichero de base de datos */
-strcpy(nf_base_datos,nombre);
+	/* guarda nombre de fichero de base de datos */
+	strcpy(nf_base_datos,nombre);
 
 
-/* Obtiene el tamaÃ±o del DDB */
-fseek(fdb, 0, SEEK_END);
-ddb_size = ftell(fdb);
-fseek(fdb, 0, SEEK_SET);
+	/* Obtiene el tamaÃ±o del DDB */
+	fseek(fdb, 0, SEEK_END);
+	ddb_size = ftell(fdb);
+	fseek(fdb, 0, SEEK_SET);
 
-if(ddb_size>0x10000)
-	m_err(1,"DDB file is larger than 64K",1);
+	if(ddb_size>=0x10000)
+		m_err(1,"DDB file is larger than 64K",1);
 
-/* lee el DDB completo*/
-frd(fbd,ddb,1,ddb_size);
-/* lee cabecera aparte, por comodidad */
-fseek(fdb, 0, SEEK_SET);
-frd(fbd,&cab,sizeof(CAB_DAAD),1);
-fclose(fbd);
+	/* lee el DDB completo*/
+	frd(fdb,ddb,1,ddb_size);
+	/* lee cabecera aparte, por comodidad */
+	fseek(fdb, 0, SEEK_SET);
+	frd(fdb,&cab,sizeof(CAB_DAAD),1);
+	fclose(fdb);
 
-/* G3.25: guarda copia de los objetos */
-for(i=0; i<cab.bytes_obj; i++) tab_obj2[i]=tab_obj[i];
-
+	/* Coloca los datos de los objetos en la tabla que los maneja despuÃ©s. Se mantiene el dato original en el DDB para poder restaurarlos al reiniciar partida */
+	for(i=0; i<cab.num_obj; i++) loc_obj[i] = getDDBByte(cab.obj_initially_pos + i);
 }
 
 /****************************************************************************
@@ -802,26 +801,28 @@ char mayuscula(char c)
 if((c>='a') && (c<='z')) return(c-(char)'a'+(char)'A');
 
 switch(c) {
-	case (char)'Ã±' :
-		c=(char)'Ã‘';
+	case (char)'¤' :
+		c=(char)'¥';
 		break;
-	case (char)'Ã¡' :
+	case (char)' ' :
 		c='A';
 		break;
-	case (char)'Ã©' :
+	case (char)'‚' :
 		c='E';
 		break;
-	case (char)'Ã­' :
+	case (char)'¡' :
 		c='I';
 		break;
-	case (char)'Ã³' :
+	case (char)'¢' :
 		c='O';
 		break;
-	case (char)'Ãº' :
-	case (char)'Ã¼' :
+	case (char)'£' :
+	case (char)'' :
 		c='U';
 		break;
 }
+
+
 
 return(c);
 }
@@ -865,15 +866,7 @@ if(flag) {
 	g_modovideo(G_MV_T80C);
 	/* restaura indicador de ruptura */
 	setcbrk(ruptura);
-	/* libera memoria */
-	free(tab_msy);
-	free(tab_msg);
-	free(tab_loc);
-	free(tab_conx);
-	free(tab_obj);
-	free(tab_obj2);         /* G3.25 */
-	free(tab_pro);
-
+	
 	#if DEBUGGER==1
 	if(img_debug!=NULL) farfree(img_debug);
 	#endif

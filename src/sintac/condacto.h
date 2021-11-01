@@ -1,5 +1,5 @@
 /**************************************
-	Fichero de cabecera para
+  	Fichero de cabecera para
 	las funciones de manejo de
 	los condactos de CONDACTO.C
 **************************************/
@@ -8,7 +8,7 @@
 #define CONDACTO_H
 
 /*** Constantes ***/
-#define STK     100             /* profundidad de la pila del int‚rprete */
+#define STK     100             /* profundidad de la pila del intérprete */
 
 #define SEPARADOR   0
 #define FIN_FRASE   1
@@ -20,11 +20,11 @@
 #define TICKS_SEG   18          /* exactamente son 18.2 */
 
 /*** Tipos de datos y estructuras ***/
-/* definici¢n de condacto, funci¢n-n£mero de par metros */
+/* definici¢n de condacto, función-número de par metros */
 typedef struct condacto {
-	BOOLEAN (*cond)();      /* puntero a funci¢n del condacto */
+	BOOLEAN (*cond)();      /* puntero a función del condacto */
 	BYTE npar;              /* n£mero de par metros */
-} STC_CONDACTO;
+} DAAD_CONDACTO;
 
 /* bancos para RAMSAVE y RAMLOAD */
 typedef struct {
@@ -49,6 +49,8 @@ BYTE getflag(BYTE nv);
 BOOLEAN getflagbit(BYTE nf, BYTE nb);
 void setflagbit(BYTE nv, BYTE nb);
 void clearflagbit(BYTE nf, BYTE nb);
+void borra_SL(void);
+DAAD_CONDACTO cd[];
 
 
 BOOLEAN process(BYTE prc);

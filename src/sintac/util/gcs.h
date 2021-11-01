@@ -4,7 +4,7 @@
 **************************************/
 
 /*** Constantes ***/
-#define GCS_VERSION	"4.1"
+#define GCS_VERSION	"4.2"
 
 #define COLOR_FONDO   	7      	/* color fondo de botones */
 #define COLOR_PPLANO   	0       /* color texto de botones */

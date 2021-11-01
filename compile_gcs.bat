@@ -1,0 +1,1 @@
+C:\dosbox\dosboxRuntime\dosbox -conf compile_gcs.conf -noconsole
